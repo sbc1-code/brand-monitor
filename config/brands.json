@@ -1,0 +1,84 @@
+{
+  "brands": [
+    {
+      "id": "brandaplha",
+      "name": "BrandAlpha",
+      "keywords": [
+        "\"BrandAlpha\"",
+        "\"BrandAlpha Inc\""
+      ],
+      "exclude_patterns": [
+        "brandaplha.example.com",
+        "support.brandbeta.example.com"
+      ]
+    },
+    {
+      "id": "brandbeta",
+      "name": "BrandBeta Pro",
+      "keywords": [
+        "\"BrandBeta\"",
+        "\"BrandBeta Pro\"",
+        "\"BrandBeta SmartSense\"",
+        "\"BrandBeta MiniReel\"",
+        "\"BrandBeta Mini Pro\"",
+        "\"BrandBeta Compact\"",
+        "\"Digital Self-Leveling\" BrandBeta"
+      ],
+      "exclude_patterns": [
+        "support.brandbeta.example.com",
+        "partnerstore.example.com/shop"
+      ]
+    },
+    {
+      "id": "brandgamma",
+      "name": "BrandGamma Systems",
+      "keywords": [
+        "\"BrandGamma Systems\"",
+        "\"BrandGamma Power and Light\"",
+        "\"BGSL\" subsea",
+        "\"GammaCam Pro\"",
+        "\"BrandGamma\" ROV camera",
+        "\"BrandGamma\" underwater light"
+      ],
+      "exclude_patterns": [
+        "brandgamma.example.com"
+      ]
+    },
+    {
+      "id": "branddelta",
+      "name": "BrandDelta Locators",
+      "keywords": [
+        "\"BrandDelta\"",
+        "\"BrandDelta Pro\"",
+        "\"BrandDelta SR-24\"",
+        "\"BrandDelta SR-20\""
+      ],
+      "exclude_patterns": []
+    },
+    {
+      "id": "brandepsilon",
+      "name": "BrandEpsilon Track",
+      "keywords": [
+        "\"BrandEpsilon\"",
+        "\"BrandEpsilon Scout\"",
+        "\"BrandEpsilon Pro\""
+      ],
+      "exclude_patterns": []
+    },
+    {
+      "id": "brandzeta",
+      "name": "BrandZeta Live",
+      "keywords": [
+        "\"BrandZeta Live\"",
+        "\"BrandZeta Live\" app"
+      ],
+      "exclude_patterns": []
+    }
+  ],
+  "scan_settings": {
+    "lookback_days": 7,
+    "signal_threshold": 40,
+    "notify_threshold": 55,
+    "max_results_per_keyword": 20
+  }
+}

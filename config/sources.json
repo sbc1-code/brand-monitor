@@ -1,0 +1,82 @@
+{
+  "sources": {
+    "google_news_rss": {
+      "enabled": true,
+      "type": "rss",
+      "base_url": "https://news.google.com/rss/search?q={query}&hl=en-US&gl=US&ceid=US:en",
+      "description": "Google News RSS feed search",
+      "rate_limit_seconds": 3
+    },
+    "reddit": {
+      "enabled": true,
+      "type": "json_api",
+      "base_url": "https://www.reddit.com/search.json?q={query}&sort=new&t=week&limit=25",
+      "description": "Reddit search API (public JSON)",
+      "rate_limit_seconds": 5,
+      "user_agent": "BrandMonitor/1.0"
+    },
+    "youtube_rss": {
+      "enabled": false,
+      "type": "api",
+      "description": "YouTube Data API v3 (requires API key)",
+      "api_key_env": "YOUTUBE_API_KEY",
+      "note": "Enable when API key is configured in CI/CD variables"
+    },
+    "google_custom_search": {
+      "enabled": false,
+      "type": "api",
+      "description": "Google Custom Search API (requires API key + CX ID)",
+      "base_url": "https://www.googleapis.com/customsearch/v1",
+      "rate_limit_seconds": 2,
+      "user_agent": "BrandMonitor/1.0",
+      "api_key_env": "GOOGLE_CSE_KEY",
+      "cx_env": "GOOGLE_CSE_CX",
+      "note": "Enable when Google Cloud API key is configured. 100 free queries/day."
+    },
+    "google_analytics": {
+      "enabled": false,
+      "type": "api",
+      "description": "Google Analytics 4 Data API",
+      "credentials_env": "GA4_SERVICE_ACCOUNT_JSON",
+      "note": "Future: Pull referral traffic data showing which external sites send visitors"
+    }
+  },
+  "known_sources": [
+    {
+      "name": "Industry Trade Monthly",
+      "domain": "industrytrademag.example.com",
+      "rss": "https://www.industrytrademag.example.com/rss",
+      "check_rss": true
+    },
+    {
+      "name": "Pro Tools Review",
+      "domain": "protoolsreview.example.com",
+      "rss": "https://www.protoolsreview.example.com/feed/",
+      "check_rss": true
+    },
+    {
+      "name": "Facilities & Maintenance",
+      "domain": "facilitiesmag.example.com",
+      "rss": null,
+      "check_rss": false
+    },
+    {
+      "name": "HVAC Business Journal",
+      "domain": "hvacjournal.example.com",
+      "rss": null,
+      "check_rss": false
+    },
+    {
+      "name": "Ocean Science Today",
+      "domain": "oceansciencetoday.example.com",
+      "rss": null,
+      "check_rss": false
+    },
+    {
+      "name": "Marine Technology Review",
+      "domain": "marinetechreview.example.com",
+      "rss": null,
+      "check_rss": false
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scoring_rules": {
+    "source_authority": {
+      "description": "Base score by source type",
+      "weights": {
+        "institutional": 30,
+        "trade_publication": 25,
+        "news_article": 20,
+        "case_study": 25,
+        "independent_review": 20,
+        "video_review": 15,
+        "blog_post": 15,
+        "forum_discussion": 10,
+        "retail_review": 10,
+        "reseller_listing": 5,
+        "app_store_review": 10
+      }
+    },
+    "content_depth": {
+      "description": "Bonus for substantive mentions vs passing references",
+      "deep_mention": 20,
+      "product_specific": 15,
+      "brand_only": 5
+    },
+    "recency": {
+      "description": "Bonus for recent content",
+      "within_7_days": 20,
+      "within_30_days": 15,
+      "within_90_days": 10,
+      "within_180_days": 5,
+      "older": 0
+    },
+    "sentiment": {
+      "description": "Modifier based on sentiment",
+      "positive": 10,
+      "neutral": 0,
+      "negative": 5,
+      "note": "Negative mentions still have value for awareness and response"
+    },
+    "first_party_penalty": {
+      "description": "Reduce score for first-party or partner content",
+      "first_party": -50,
+      "partner_reseller": -10
+    }
+  },
+  "thresholds": {
+    "report": 40,
+    "notify": 55,
+    "highlight": 75,
+    "description": "report=include in data, notify=email alert, highlight=call out in summary"
+  }
+}

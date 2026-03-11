@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Monitor - Sample Report</title>
+    <style>
+        :root {
+            --bg: #0b0b0b;
+            --surface: #141414;
+            --border: #222;
+            --accent: #8a9a7b;
+            --accent-dim: rgba(138, 154, 123, 0.15);
+            --text: #e4e5e0;
+            --text-muted: #888;
+            --text-heading: #f0f0ee;
+            --highlight: #c97a4a;
+            --highlight-dim: rgba(201, 122, 74, 0.15);
+            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        [data-theme="light"] {
+            --bg: #f5f3f0;
+            --surface: #ffffff;
+            --border: #ddd;
+            --accent: #8a9a7b;
+            --accent-dim: rgba(138, 154, 123, 0.10);
+            --text: #2d3031;
+            --text-muted: #777;
+            --text-heading: #1a1a1a;
+            --highlight: #c97a4a;
+            --highlight-dim: rgba(201, 122, 74, 0.10);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font);
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 100;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-family: var(--font);
+            font-size: 12px;
+            padding: 6px 12px;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .theme-toggle:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* Sample banner */
+        .sample-banner {
+            background: var(--accent-dim);
+            border: 1px solid var(--accent);
+            padding: 12px 16px;
+            margin-bottom: 32px;
+            font-size: 13px;
+            color: var(--accent);
+            letter-spacing: 0.2px;
+        }
+
+        .sample-banner strong { font-weight: 600; }
+
+        /* Header */
+        h1 {
+            font-weight: 700;
+            color: var(--text-heading);
+            font-size: 28px;
+            margin-bottom: 4px;
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 12px;
+        }
+
+        .report-date {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 28px;
+        }
+
+        h2 {
+            font-weight: 600;
+            color: var(--text-heading);
+            font-size: 18px;
+            margin-top: 36px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+        }
+
+        h3 {
+            font-weight: 600;
+            color: var(--text-heading);
+            font-size: 15px;
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+
+        p { margin: 8px 0; font-size: 14px; }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        a:hover {
+            color: var(--text-heading);
+            border-bottom-color: var(--text-heading);
+        }
+
+        /* Summary cards */
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 18px;
+            text-align: center;
+        }
+
+        .stat-card .count {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .stat-card .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 6px;
+        }
+
+        /* Brand cards */
+        .brand-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .brand-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 14px;
+            text-align: center;
+        }
+
+        .brand-card h4 {
+            margin: 0 0 6px 0;
+            color: var(--text-heading);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .brand-card .count {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .brand-card .label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        /* Stats table */
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 13px;
+        }
+
+        .stats-table th {
+            background: var(--surface);
+            color: var(--text-heading);
+            padding: 10px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .stats-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Mention items */
+        .mention-item {
+            margin: 14px 0;
+            padding: 16px;
+            background: var(--surface);
+            border-left: 3px solid var(--accent);
+            border-top: 1px solid var(--border);
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mention-item.highlight {
+            border-left-color: var(--highlight);
+            border-left-width: 4px;
+        }
+
+        .mention-item h4 {
+            margin: 0 0 6px 0;
+            color: var(--text-heading);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .mention-item h4 a {
+            color: var(--text-heading);
+            border-bottom: none;
+        }
+
+        .mention-item h4 a:hover { color: var(--accent); }
+
+        .mention-item p {
+            margin: 6px 0;
+            font-size: 13px;
+        }
+
+        .mention-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border);
+        }
+
+        .score-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        .score-high { background: var(--highlight-dim); color: var(--highlight); }
+        .score-medium { background: var(--accent-dim); color: var(--accent); }
+        .score-low { background: var(--surface); color: var(--text-muted); border: 1px solid var(--border); }
+
+        .sentiment-positive { color: var(--accent); }
+        .sentiment-negative { color: var(--highlight); }
+        .sentiment-neutral { color: var(--text-muted); }
+
+        /* Cumulative table */
+        .csv-section { margin-top: 40px; }
+
+        .csv-toolbar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 14px;
+            margin: 14px 0 10px 0;
+        }
+
+        .toolbar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(130px, 1fr));
+            gap: 10px;
+            align-items: end;
+        }
+
+        .toolbar-field label {
+            display: block;
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .toolbar-field input,
+        .toolbar-field select {
+            width: 100%;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            padding: 6px 8px;
+            font-size: 12px;
+            font-family: var(--font);
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .toolbar-button {
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 7px 12px;
+            cursor: pointer;
+            font-family: var(--font);
+        }
+
+        .toolbar-button:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg);
+        }
+
+        .toolbar-meta {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .csv-table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+        }
+
+        .csv-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin: 0;
+            min-width: 800px;
+        }
+
+        .csv-table th {
+            background: var(--surface);
+            color: var(--text-heading);
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .csv-table td {
+            padding: 8px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        .csv-table tr:hover { background: var(--accent-dim); }
+
+        .url-cell {
+            word-break: break-all;
+            max-width: 160px;
+        }
+
+        .row-tag {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .row-tag-live {
+            background: var(--accent-dim);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+
+        .row-tag-historical {
+            background: var(--highlight-dim);
+            color: var(--highlight);
+            border: 1px solid var(--highlight);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 48px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .footer a { color: var(--text-muted); }
+        .footer a:hover { color: var(--accent); }
+
+        @media (max-width: 700px) {
+            .summary-stats { grid-template-columns: 1fr; }
+            .toolbar-grid { grid-template-columns: 1fr 1fr; }
+            .brand-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<button class="theme-toggle" id="theme-toggle" type="button">Light</button>
+
+<div class="sample-banner">
+    <strong>Sample Report.</strong> This page shows fictional data generated for demonstration purposes. Run the pipeline against your own brand configuration to produce a live report.
+</div>
+
+<h1>Brand Monitor Report</h1>
+<div class="report-date">2026-03-07 | Last 7 days</div>
+
+<div class="summary-stats">
+    <div class="stat-card">
+        <div class="count">14</div>
+        <div class="label">New Mentions</div>
+    </div>
+    <div class="stat-card">
+        <div class="count">3</div>
+        <div class="label">Highlights</div>
+    </div>
+    <div class="stat-card">
+        <div class="count">42</div>
+        <div class="label">Total Tracked</div>
+    </div>
+</div>
+
+<h2>Brand Mention Breakdown</h2>
+<div class="brand-stats">
+    <div class="brand-card">
+        <h4>BrandAlpha</h4>
+        <div class="count">5</div>
+        <div class="label">Mentions</div>
+    </div>
+    <div class="brand-card">
+        <h4>BrandBeta Pro</h4>
+        <div class="count">4</div>
+        <div class="label">Mentions</div>
+    </div>
+    <div class="brand-card">
+        <h4>BrandGamma Systems</h4>
+        <div class="count">2</div>
+        <div class="label">Mentions</div>
+    </div>
+    <div class="brand-card">
+        <h4>BrandDelta Locators</h4>
+        <div class="count">1</div>
+        <div class="label">Mentions</div>
+    </div>
+    <div class="brand-card">
+        <h4>BrandEpsilon Track</h4>
+        <div class="count">1</div>
+        <div class="label">Mentions</div>
+    </div>
+    <div class="brand-card">
+        <h4>BrandZeta Live</h4>
+        <div class="count">1</div>
+        <div class="label">Mentions</div>
+    </div>
+</div>
+
+<h2>Content Type Distribution</h2>
+<table class="stats-table">
+    <tr><th>Content Type</th><th>Count</th><th>Percentage</th></tr>
+    <tr><td>Trade Publication</td><td>5</td><td>36%</td></tr>
+    <tr><td>Industry Blog</td><td>4</td><td>29%</td></tr>
+    <tr><td>News Article</td><td>3</td><td>21%</td></tr>
+    <tr><td>Forum Post</td><td>2</td><td>14%</td></tr>
+</table>
+
+<h2>Highlights</h2>
+<p>Mentions with signal score 75+ indicating high-value brand visibility.</p>
+
+<div class="mention-item highlight">
+    <h4>
+        <a href="#">BrandAlpha Wins Equipment Innovation Award at TechExpo 2026</a>
+        <span class="score-badge score-high">92</span>
+    </h4>
+    <p><strong>BrandAlpha</strong></p>
+    <p>BrandAlpha Inc took home the top equipment innovation award at this year's TechExpo conference in Denver. The company's latest diagnostic platform was praised by judges for its integration of real-time telemetry and AI-driven anomaly detection. Industry analysts noted that the win positions BrandAlpha as the frontrunner in the next-generation inspection category.</p>
+    <div class="mention-meta">
+        <strong>Source:</strong> TechExpo Daily (Trade Publication)
+        | <strong>Published:</strong> 2026-03-05
+        | <strong>Sentiment:</strong> <span class="sentiment-positive">positive</span>
+    </div>
+</div>
+
+<div class="mention-item highlight">
+    <h4>
+        <a href="#">Top 10 Utility Inspection Tools for 2026: BrandBeta SmartSense Ranked #3</a>
+        <span class="score-badge score-high">87</span>
+    </h4>
+    <p><strong>BrandBeta Pro</strong></p>
+    <p>InfraDigest's annual buyer's guide placed BrandBeta SmartSense at #3 in its utility inspection tool rankings. The review highlighted the unit's portability, battery life, and field-tested accuracy across both wet and dry conditions. This marks BrandBeta's third consecutive year in the top five.</p>
+    <div class="mention-meta">
+        <strong>Source:</strong> InfraDigest (Industry Blog)
+        | <strong>Published:</strong> 2026-03-04
+        | <strong>Sentiment:</strong> <span class="sentiment-positive">positive</span>
+    </div>
+</div>
+
+<div class="mention-item highlight">
+    <h4>
+        <a href="#">GammaCam Pro Featured in Offshore Magazine Deep-Water Equipment Roundup</a>
+        <span class="score-badge score-high">81</span>
+    </h4>
+    <p><strong>BrandGamma Systems</strong></p>
+    <p>Offshore Magazine's March issue features an extensive equipment roundup where GammaCam Pro is described as a "standout performer" for ROV-mounted visual inspection in deep-water environments. The article quotes two offshore operators who adopted the system in 2025.</p>
+    <div class="mention-meta">
+        <strong>Source:</strong> Offshore Magazine (Trade Publication)
+        | <strong>Published:</strong> 2026-03-03
+        | <strong>Sentiment:</strong> <span class="sentiment-positive">positive</span>
+    </div>
+</div>
+
+<h2>BrandAlpha</h2>
+<p><strong>New Mentions:</strong> 5</p>
+
+<div class="mention-item">
+    <h4>
+        <a href="#">Municipal Water District Deploys BrandAlpha Fleet for Annual Survey</a>
+        <span class="score-badge score-medium">68</span>
+    </h4>
+    <p><strong>Product:</strong> BrandAlpha Inc</p>
+    <p>The Central Valley Water District announced that it will deploy a fleet of BrandAlpha units for its 2026 annual pipeline integrity survey. The contract covers over 200 miles of infrastructure across three counties.</p>
+    <div class="mention-meta">
+        <strong>Source:</strong> Central Valley Utilities Report (News Article)
+        | <strong>Published:</strong> 2026-03-06
+        | <strong>Sentiment:</strong> <span class="sentiment-positive">positive</span>
+    </div>
+</div>
+
+<div class="mention-item">
+    <h4>
+        <a href="#">BrandAlpha vs. CompetitorX: Field Comparison Review</a>
+        <span class="score-badge score-medium">62</span>
+    </h4>
+    <p><strong>Product:</strong> BrandAlpha Inc</p>
+    <p>An independent equipment reviewer published a side-by-side field comparison between BrandAlpha and CompetitorX, concluding that BrandAlpha delivers faster setup times and more consistent data in variable terrain conditions.</p>
+    <div class="mention-meta">
+        <strong>Source:</strong> FieldTest Weekly (Industry Blog)
+        | <strong>Published:</strong> 2026-03-02
+        | <strong>Sentiment:</strong> <span class="sentiment-neutral">neutral</span>
+    </div>
+</div>
+
+<h2>BrandBeta Pro</h2>
+<p><strong>New Mentions:</strong> 4</p>
+
+<div class="mention-item">
+    <h4>
+        <a href="#">Forum Discussion: BrandBeta MiniReel Battery Performance in Cold Weather</a>
+        <span class="score-badge score-low">44</span>
+    </h4>
+    <p><strong>Product:</strong> BrandBeta MiniReel</p>
+    <p>A thread on the Utility Workers Forum discusses cold-weather battery performance for the BrandBeta MiniReel. Several users reported that performance remained stable down to 15F, though one user noted slower boot times below 0F.</p>
+    <div class="mention-meta">
+        <strong>Source:</strong> Utility Workers Forum (Forum Post)
+        | <strong>Published:</strong> 2026-03-01
+        | <strong>Sentiment:</strong> <span class="sentiment-neutral">neutral</span>
+    </div>
+</div>
+
+<div class="mention-item">
+    <h4>
+        <a href="#">BrandBeta Compact Earns Mention in State DOT Approved Equipment List</a>
+        <span class="score-badge score-medium">71</span>
+    </h4>
+    <p><strong>Product:</strong> BrandBeta Compact</p>
+    <p>The Oregon Department of Transportation added BrandBeta Compact to its approved equipment list for sewer line inspection projects. The listing follows a six-month pilot program across three regional offices.</p>
+    <div class="mention-meta">
+        <strong>Source:</strong> Oregon DOT Bulletin (News Article)
+        | <strong>Published:</strong> 2026-03-05
+        | <strong>Sentiment:</strong> <span class="sentiment-positive">positive</span>
+    </div>
+</div>
+
+<h2>BrandGamma Systems</h2>
+<p><strong>New Mentions:</strong> 2</p>
+
+<div class="mention-item">
+    <h4>
+        <a href="#">BrandGamma Power and Light Units Spotted at Subsea Europe Conference</a>
+        <span class="score-badge score-medium">58</span>
+    </h4>
+    <p><strong>Product:</strong> BrandGamma Power and Light</p>
+    <p>BrandGamma Systems had a visible presence at the Subsea Europe conference in Amsterdam, with their Power and Light product line featured in three separate booth demonstrations.</p>
+    <div class="mention-meta">
+        <strong>Source:</strong> Subsea World News (Trade Publication)
+        | <strong>Published:</strong> 2026-03-04
+        | <strong>Sentiment:</strong> <span class="sentiment-positive">positive</span>
+    </div>
+</div>
+
+<h2>BrandDelta Locators</h2>
+<p><strong>New Mentions:</strong> 1</p>
+
+<div class="mention-item">
+    <h4>
+        <a href="#">Reddit Thread: Which Locator for Residential Work?</a>
+        <span class="score-badge score-low">38</span>
+    </h4>
+    <p><strong>Product:</strong> BrandDelta SR-24</p>
+    <p>A plumbing contractor asked for locator recommendations on r/Plumbing. Multiple commenters mentioned the BrandDelta SR-24, with one user calling it "reliable and hard to break."</p>
+    <div class="mention-meta">
+        <strong>Source:</strong> Reddit r/Plumbing (Forum Post)
+        | <strong>Published:</strong> 2026-03-06
+        | <strong>Sentiment:</strong> <span class="sentiment-positive">positive</span>
+    </div>
+</div>
+
+<h2>BrandEpsilon Track</h2>
+<p><strong>New Mentions:</strong> 1</p>
+
+<div class="mention-item">
+    <h4>
+        <a href="#">BrandEpsilon Scout Featured in Construction Equipment Podcast Episode</a>
+        <span class="score-badge score-medium">55</span>
+    </h4>
+    <p><strong>Product:</strong> BrandEpsilon Scout</p>
+    <p>The "Build Better" podcast dedicated a 12-minute segment to GPS tracking solutions for construction fleets. BrandEpsilon Scout was mentioned as a cost-effective option for small contractors.</p>
+    <div class="mention-meta">
+        <strong>Source:</strong> Build Better Podcast (Industry Blog)
+        | <strong>Published:</strong> 2026-03-02
+        | <strong>Sentiment:</strong> <span class="sentiment-positive">positive</span>
+    </div>
+</div>
+
+<h2>BrandZeta Live</h2>
+<p><strong>New Mentions:</strong> 1</p>
+
+<div class="mention-item">
+    <h4>
+        <a href="#">BrandZeta Live App Update Adds Real-Time Crew Coordination</a>
+        <span class="score-badge score-medium">60</span>
+    </h4>
+    <p><strong>Product:</strong> BrandZeta Live</p>
+    <p>Version 4.2 of the BrandZeta Live app was reviewed by AppWatch, noting the addition of real-time crew coordination and improved offline sync. The reviewer described the update as a "solid quality-of-life improvement for field teams."</p>
+    <div class="mention-meta">
+        <strong>Source:</strong> AppWatch (Industry Blog)
+        | <strong>Published:</strong> 2026-03-03
+        | <strong>Sentiment:</strong> <span class="sentiment-positive">positive</span>
+    </div>
+</div>
+
+<!-- Cumulative Mention Log -->
+<div class="csv-section">
+    <h2>Cumulative Mention Log</h2>
+    <p>All 42 tracked mentions. Use search, filters, and sort controls to explore.</p>
+
+    <div class="csv-toolbar">
+        <div class="toolbar-grid">
+            <div class="toolbar-field">
+                <label for="mention-search">Search</label>
+                <input id="mention-search" type="text" placeholder="Title, source, product">
+            </div>
+            <div class="toolbar-field">
+                <label for="brand-filter">Brand</label>
+                <select id="brand-filter">
+                    <option value="">All Brands</option>
+                </select>
+            </div>
+            <div class="toolbar-field">
+                <label for="type-filter">Source Type</label>
+                <select id="type-filter">
+                    <option value="">All Types</option>
+                </select>
+            </div>
+            <div class="toolbar-field">
+                <label for="origin-filter">Origin</label>
+                <select id="origin-filter">
+                    <option value="">Live + Historical</option>
+                    <option value="live">Live</option>
+                    <option value="historical">Historical</option>
+                </select>
+            </div>
+            <div class="toolbar-field">
+                <label for="score-filter">Min Score</label>
+                <input id="score-filter" type="number" min="0" max="100" step="1" placeholder="0">
+            </div>
+            <div class="toolbar-field">
+                <label for="sort-select">Sort</label>
+                <select id="sort-select">
+                    <option value="score_desc">Score High to Low</option>
+                    <option value="score_asc">Score Low to High</option>
+                    <option value="date_desc">Date Newest First</option>
+                    <option value="date_asc">Date Oldest First</option>
+                    <option value="brand_asc">Brand A to Z</option>
+                    <option value="brand_desc">Brand Z to A</option>
+                </select>
+            </div>
+            <div class="toolbar-actions">
+                <button class="toolbar-button" type="button" id="reset-filters">Reset</button>
+            </div>
+        </div>
+        <div id="result-count" class="toolbar-meta"></div>
+    </div>
+
+    <div class="csv-table-wrap">
+        <table class="csv-table" id="cumulative-table">
+            <thead>
+                <tr>
+                    <th>Brand</th>
+                    <th>Product</th>
+                    <th>Source</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Score</th>
+                    <th>Origin</th>
+                    <th>Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-brand="brandalpha" data-brand-label="BrandAlpha" data-type="trade publication" data-type-label="Trade Publication" data-source="techexpo daily" data-score="92" data-date="2026-03-05" data-origin="live" data-search="brandalpha techexpo daily trade publication equipment innovation award">
+                    <td>BrandAlpha</td><td>BrandAlpha Inc</td><td>TechExpo Daily</td><td>Trade Publication</td><td>2026-03-05</td><td>92</td><td><span class="row-tag row-tag-live">Live</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="brandbeta pro" data-brand-label="BrandBeta Pro" data-type="industry blog" data-type-label="Industry Blog" data-source="infradigest" data-score="87" data-date="2026-03-04" data-origin="live" data-search="brandbeta pro infradigest industry blog top 10 utility inspection">
+                    <td>BrandBeta Pro</td><td>BrandBeta SmartSense</td><td>InfraDigest</td><td>Industry Blog</td><td>2026-03-04</td><td>87</td><td><span class="row-tag row-tag-live">Live</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="brandgamma systems" data-brand-label="BrandGamma Systems" data-type="trade publication" data-type-label="Trade Publication" data-source="offshore magazine" data-score="81" data-date="2026-03-03" data-origin="live" data-search="brandgamma systems offshore magazine trade publication gammacam pro deep water">
+                    <td>BrandGamma Systems</td><td>GammaCam Pro</td><td>Offshore Magazine</td><td>Trade Publication</td><td>2026-03-03</td><td>81</td><td><span class="row-tag row-tag-live">Live</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="brandbeta pro" data-brand-label="BrandBeta Pro" data-type="news article" data-type-label="News Article" data-source="oregon dot bulletin" data-score="71" data-date="2026-03-05" data-origin="live" data-search="brandbeta pro oregon dot bulletin news article compact approved equipment">
+                    <td>BrandBeta Pro</td><td>BrandBeta Compact</td><td>Oregon DOT Bulletin</td><td>News Article</td><td>2026-03-05</td><td>71</td><td><span class="row-tag row-tag-live">Live</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="brandalpha" data-brand-label="BrandAlpha" data-type="news article" data-type-label="News Article" data-source="central valley utilities report" data-score="68" data-date="2026-03-06" data-origin="live" data-search="brandalpha central valley utilities report municipal water district pipeline">
+                    <td>BrandAlpha</td><td>BrandAlpha Inc</td><td>Central Valley Utilities</td><td>News Article</td><td>2026-03-06</td><td>68</td><td><span class="row-tag row-tag-live">Live</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="brandalpha" data-brand-label="BrandAlpha" data-type="industry blog" data-type-label="Industry Blog" data-source="fieldtest weekly" data-score="62" data-date="2026-03-02" data-origin="live" data-search="brandalpha fieldtest weekly industry blog field comparison competitorx">
+                    <td>BrandAlpha</td><td>BrandAlpha Inc</td><td>FieldTest Weekly</td><td>Industry Blog</td><td>2026-03-02</td><td>62</td><td><span class="row-tag row-tag-live">Live</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="brandzeta live" data-brand-label="BrandZeta Live" data-type="industry blog" data-type-label="Industry Blog" data-source="appwatch" data-score="60" data-date="2026-03-03" data-origin="live" data-search="brandzeta live appwatch industry blog app update crew coordination">
+                    <td>BrandZeta Live</td><td>BrandZeta Live</td><td>AppWatch</td><td>Industry Blog</td><td>2026-03-03</td><td>60</td><td><span class="row-tag row-tag-live">Live</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="brandgamma systems" data-brand-label="BrandGamma Systems" data-type="trade publication" data-type-label="Trade Publication" data-source="subsea world news" data-score="58" data-date="2026-03-04" data-origin="live" data-search="brandgamma systems subsea world news trade publication power and light conference">
+                    <td>BrandGamma Systems</td><td>BrandGamma Power and Light</td><td>Subsea World News</td><td>Trade Publication</td><td>2026-03-04</td><td>58</td><td><span class="row-tag row-tag-live">Live</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="brandepsilon track" data-brand-label="BrandEpsilon Track" data-type="industry blog" data-type-label="Industry Blog" data-source="build better podcast" data-score="55" data-date="2026-03-02" data-origin="live" data-search="brandepsilon track build better podcast industry blog scout construction fleet">
+                    <td>BrandEpsilon Track</td><td>BrandEpsilon Scout</td><td>Build Better Podcast</td><td>Industry Blog</td><td>2026-03-02</td><td>55</td><td><span class="row-tag row-tag-live">Live</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="brandbeta pro" data-brand-label="BrandBeta Pro" data-type="forum post" data-type-label="Forum Post" data-source="utility workers forum" data-score="44" data-date="2026-03-01" data-origin="live" data-search="brandbeta pro utility workers forum forum post minireel battery cold weather">
+                    <td>BrandBeta Pro</td><td>BrandBeta MiniReel</td><td>Utility Workers Forum</td><td>Forum Post</td><td>2026-03-01</td><td>44</td><td><span class="row-tag row-tag-live">Live</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="branddelta locators" data-brand-label="BrandDelta Locators" data-type="forum post" data-type-label="Forum Post" data-source="reddit r/plumbing" data-score="38" data-date="2026-03-06" data-origin="live" data-search="branddelta locators reddit r/plumbing forum post sr-24 residential">
+                    <td>BrandDelta Locators</td><td>BrandDelta SR-24</td><td>Reddit r/Plumbing</td><td>Forum Post</td><td>2026-03-06</td><td>38</td><td><span class="row-tag row-tag-live">Live</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <!-- Historical mentions -->
+                <tr data-brand="brandalpha" data-brand-label="BrandAlpha" data-type="trade publication" data-type-label="Trade Publication" data-source="pipeline journal" data-score="85" data-date="2026-02-20" data-origin="historical" data-search="brandalpha pipeline journal trade publication annual review infrastructure">
+                    <td>BrandAlpha</td><td>BrandAlpha Inc</td><td>Pipeline Journal</td><td>Trade Publication</td><td>2026-02-20</td><td>85</td><td><span class="row-tag row-tag-historical">Historical</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="brandalpha" data-brand-label="BrandAlpha" data-type="news article" data-type-label="News Article" data-source="water world" data-score="78" data-date="2026-02-15" data-origin="historical" data-search="brandalpha water world news article infrastructure assessment contract">
+                    <td>BrandAlpha</td><td>BrandAlpha Inc</td><td>Water World</td><td>News Article</td><td>2026-02-15</td><td>78</td><td><span class="row-tag row-tag-historical">Historical</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="brandbeta pro" data-brand-label="BrandBeta Pro" data-type="industry blog" data-type-label="Industry Blog" data-source="sewer solutions" data-score="73" data-date="2026-02-18" data-origin="historical" data-search="brandbeta pro sewer solutions industry blog smartsense review field test">
+                    <td>BrandBeta Pro</td><td>BrandBeta SmartSense</td><td>Sewer Solutions</td><td>Industry Blog</td><td>2026-02-18</td><td>73</td><td><span class="row-tag row-tag-historical">Historical</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="brandgamma systems" data-brand-label="BrandGamma Systems" data-type="trade publication" data-type-label="Trade Publication" data-source="subsea tech review" data-score="70" data-date="2026-02-12" data-origin="historical" data-search="brandgamma systems subsea tech review trade publication underwater lighting">
+                    <td>BrandGamma Systems</td><td>BrandGamma Underwater Light</td><td>Subsea Tech Review</td><td>Trade Publication</td><td>2026-02-12</td><td>70</td><td><span class="row-tag row-tag-historical">Historical</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="branddelta locators" data-brand-label="BrandDelta Locators" data-type="industry blog" data-type-label="Industry Blog" data-source="locate insider" data-score="66" data-date="2026-02-14" data-origin="historical" data-search="branddelta locators locate insider industry blog sr-20 comparison">
+                    <td>BrandDelta Locators</td><td>BrandDelta SR-20</td><td>Locate Insider</td><td>Industry Blog</td><td>2026-02-14</td><td>66</td><td><span class="row-tag row-tag-historical">Historical</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="brandepsilon track" data-brand-label="BrandEpsilon Track" data-type="news article" data-type-label="News Article" data-source="fleet management weekly" data-score="64" data-date="2026-02-10" data-origin="historical" data-search="brandepsilon track fleet management weekly news article gps tracking construction">
+                    <td>BrandEpsilon Track</td><td>BrandEpsilon Pro</td><td>Fleet Management Weekly</td><td>News Article</td><td>2026-02-10</td><td>64</td><td><span class="row-tag row-tag-historical">Historical</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="brandzeta live" data-brand-label="BrandZeta Live" data-type="industry blog" data-type-label="Industry Blog" data-source="field tech daily" data-score="52" data-date="2026-02-08" data-origin="historical" data-search="brandzeta live field tech daily industry blog mobile app crew management">
+                    <td>BrandZeta Live</td><td>BrandZeta Live</td><td>Field Tech Daily</td><td>Industry Blog</td><td>2026-02-08</td><td>52</td><td><span class="row-tag row-tag-historical">Historical</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="brandalpha" data-brand-label="BrandAlpha" data-type="forum post" data-type-label="Forum Post" data-source="reddit r/utilities" data-score="41" data-date="2026-02-05" data-origin="historical" data-search="brandalpha reddit r/utilities forum post recommendation municipal">
+                    <td>BrandAlpha</td><td>BrandAlpha Inc</td><td>Reddit r/Utilities</td><td>Forum Post</td><td>2026-02-05</td><td>41</td><td><span class="row-tag row-tag-historical">Historical</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="brandbeta pro" data-brand-label="BrandBeta Pro" data-type="trade publication" data-type-label="Trade Publication" data-source="trenchless technology" data-score="76" data-date="2026-01-28" data-origin="historical" data-search="brandbeta pro trenchless technology trade publication mini pro trenchless review">
+                    <td>BrandBeta Pro</td><td>BrandBeta Mini Pro</td><td>Trenchless Technology</td><td>Trade Publication</td><td>2026-01-28</td><td>76</td><td><span class="row-tag row-tag-historical">Historical</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="brandgamma systems" data-brand-label="BrandGamma Systems" data-type="news article" data-type-label="News Article" data-source="marine technology news" data-score="69" data-date="2026-01-22" data-origin="historical" data-search="brandgamma systems marine technology news article rov camera deep sea">
+                    <td>BrandGamma Systems</td><td>GammaCam Pro</td><td>Marine Technology News</td><td>News Article</td><td>2026-01-22</td><td>69</td><td><span class="row-tag row-tag-historical">Historical</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+                <tr data-brand="branddelta locators" data-brand-label="BrandDelta Locators" data-type="forum post" data-type-label="Forum Post" data-source="contractor talk" data-score="35" data-date="2026-01-15" data-origin="historical" data-search="branddelta locators contractor talk forum post sr-24 reliability field">
+                    <td>BrandDelta Locators</td><td>BrandDelta SR-24</td><td>Contractor Talk</td><td>Forum Post</td><td>2026-01-15</td><td>35</td><td><span class="row-tag row-tag-historical">Historical</span></td><td class="url-cell"><a href="#">link</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p style="margin-top: 20px; font-size: 12px; color: var(--text-muted);">
+        <em>Signal Score: Combined metric of source authority, content depth, recency, and sentiment. Higher scores indicate more valuable mentions.</em>
+    </p>
+</div>
+
+<script>
+(function () {
+    // Theme toggle
+    var toggle = document.getElementById("theme-toggle");
+    var html = document.documentElement;
+    var stored = localStorage.getItem("bm-theme");
+    if (stored === "light") {
+        html.setAttribute("data-theme", "light");
+        toggle.textContent = "Dark";
+    }
+    toggle.addEventListener("click", function () {
+        var current = html.getAttribute("data-theme");
+        if (current === "dark") {
+            html.setAttribute("data-theme", "light");
+            toggle.textContent = "Dark";
+            localStorage.setItem("bm-theme", "light");
+        } else {
+            html.setAttribute("data-theme", "dark");
+            toggle.textContent = "Light";
+            localStorage.setItem("bm-theme", "dark");
+        }
+    });
+
+    // Table filtering (same logic as report template)
+    var table = document.getElementById("cumulative-table");
+    if (!table) return;
+
+    var tbody = table.querySelector("tbody");
+    var allRows = Array.prototype.slice.call(tbody.querySelectorAll("tr"));
+
+    var searchInput = document.getElementById("mention-search");
+    var brandFilter = document.getElementById("brand-filter");
+    var typeFilter = document.getElementById("type-filter");
+    var originFilter = document.getElementById("origin-filter");
+    var scoreFilter = document.getElementById("score-filter");
+    var sortSelect = document.getElementById("sort-select");
+    var resetButton = document.getElementById("reset-filters");
+    var resultCount = document.getElementById("result-count");
+
+    function uniqueSorted(values) {
+        return Array.from(new Set(values.filter(Boolean))).sort(function (a, b) {
+            return a.localeCompare(b);
+        });
+    }
+
+    function populateSelect(select, values) {
+        values.forEach(function (v) {
+            var option = document.createElement("option");
+            option.value = v.toLowerCase();
+            option.textContent = v;
+            select.appendChild(option);
+        });
+    }
+
+    populateSelect(brandFilter, uniqueSorted(allRows.map(function (r) { return r.dataset.brandLabel; })));
+    populateSelect(typeFilter, uniqueSorted(allRows.map(function (r) { return r.dataset.typeLabel; })));
+
+    function parseDateValue(value) {
+        if (!value) return Number.NEGATIVE_INFINITY;
+        var parsed = Date.parse(value + "T00:00:00Z");
+        return Number.isNaN(parsed) ? Number.NEGATIVE_INFINITY : parsed;
+    }
+
+    function sortRows(rows) {
+        var mode = sortSelect.value || "score_desc";
+        var parts = mode.split("_");
+        var key = parts[0];
+        var dir = parts[1] === "asc" ? 1 : -1;
+
+        rows.sort(function (a, b) {
+            var av, bv;
+            if (key === "score") {
+                av = parseFloat(a.dataset.score || "0");
+                bv = parseFloat(b.dataset.score || "0");
+            } else if (key === "date") {
+                av = parseDateValue(a.dataset.date);
+                bv = parseDateValue(b.dataset.date);
+            } else if (key === "brand") {
+                av = (a.dataset.brandLabel || "").toLowerCase();
+                bv = (b.dataset.brandLabel || "").toLowerCase();
+            } else {
+                av = (a.dataset.search || "");
+                bv = (b.dataset.search || "");
+            }
+            if (av < bv) return -1 * dir;
+            if (av > bv) return 1 * dir;
+            return 0;
+        });
+    }
+
+    function apply() {
+        var query = (searchInput.value || "").trim().toLowerCase();
+        var brand = (brandFilter.value || "").trim().toLowerCase();
+        var type = (typeFilter.value || "").trim().toLowerCase();
+        var origin = (originFilter.value || "").trim().toLowerCase();
+        var minScore = parseFloat((scoreFilter.value || "").trim());
+        if (Number.isNaN(minScore)) minScore = 0;
+
+        var filtered = allRows.filter(function (row) {
+            if (query && row.dataset.search.indexOf(query) === -1) return false;
+            if (brand && row.dataset.brand !== brand) return false;
+            if (type && row.dataset.type !== type) return false;
+            if (origin && row.dataset.origin !== origin) return false;
+            if (parseFloat(row.dataset.score || "0") < minScore) return false;
+            return true;
+        });
+
+        sortRows(filtered);
+        tbody.innerHTML = "";
+        filtered.forEach(function (row) { tbody.appendChild(row); });
+        resultCount.textContent = "Showing " + filtered.length + " of " + allRows.length + " mentions";
+    }
+
+    searchInput.addEventListener("input", apply);
+    brandFilter.addEventListener("change", apply);
+    typeFilter.addEventListener("change", apply);
+    originFilter.addEventListener("change", apply);
+    scoreFilter.addEventListener("input", apply);
+    sortSelect.addEventListener("change", apply);
+
+    resetButton.addEventListener("click", function () {
+        searchInput.value = "";
+        brandFilter.value = "";
+        typeFilter.value = "";
+        originFilter.value = "";
+        scoreFilter.value = "";
+        sortSelect.value = "score_desc";
+        apply();
+    });
+
+    apply();
+})();
+</script>
+
+<div class="footer">
+    <p>Brand Monitor | Automated scanning, scoring, and reporting pipeline</p>
+    <p><a href="https://github.com/sbc1-code/brand-monitor">github.com/sbc1-code/brand-monitor</a></p>
+</div>
+
+</body>
+</html>

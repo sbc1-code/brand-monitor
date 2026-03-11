@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Monitor Report</title>
+    <style>
+        @page {
+            size: letter;
+            margin: 1in;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #2D3031;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+
+        h1 {
+            font-weight: bold;
+            color: #2D3031;
+            font-size: 24pt;
+            margin-bottom: 5px;
+            border-bottom: 3px solid #30DC30;
+            padding-bottom: 10px;
+        }
+
+        .report-date {
+            font-size: 10pt;
+            color: #A2ACB4;
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            font-weight: bold;
+            color: #2D3031;
+            font-size: 16pt;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #A2ACB4;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            font-weight: bold;
+            color: #2D3031;
+            font-size: 13pt;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin: 10px 0;
+            text-align: justify;
+        }
+
+        a {
+            color: #30DC30;
+            text-decoration: none;
+            border-bottom: 1px dotted #30DC30;
+        }
+
+        a:hover {
+            color: #2D3031;
+            border-bottom: 1px solid #2D3031;
+        }
+
+        .summary-box {
+            background: #f8f9fa;
+            border-left: 4px solid #30DC30;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: white;
+            border: 2px solid #30DC30;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-card .count {
+            font-size: 32pt;
+            font-weight: bold;
+            color: #30DC30;
+            line-height: 1;
+        }
+
+        .stat-card .label {
+            font-size: 9pt;
+            color: #A2ACB4;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 5px;
+        }
+
+        .no-new {
+            text-align: center;
+            padding: 40px;
+            color: #A2ACB4;
+            font-size: 14pt;
+        }
+
+        .brand-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .brand-card {
+            background: white;
+            border: 2px solid #30DC30;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .brand-card h4 {
+            margin: 0 0 8px 0;
+            color: #2D3031;
+            font-size: 10pt;
+            font-weight: bold;
+        }
+
+        .brand-card .count {
+            font-size: 32pt;
+            font-weight: bold;
+            color: #30DC30;
+            line-height: 1;
+        }
+
+        .brand-card .label {
+            font-size: 9pt;
+            color: #A2ACB4;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 5px;
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .stats-table th {
+            background: #2D3031;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 10pt;
+        }
+
+        .stats-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #A2ACB4;
+            font-size: 10pt;
+        }
+
+        .stats-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .mention-item {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 3px solid #30DC30;
+        }
+
+        .mention-item.highlight {
+            border-left-color: #e05a20;
+            border-left-width: 4px;
+        }
+
+        .mention-item h4 {
+            margin: 0 0 8px 0;
+            color: #2D3031;
+            font-size: 11pt;
+        }
+
+        .mention-item h4 a {
+            color: #2D3031;
+            border-bottom: none;
+        }
+
+        .mention-item h4 a:hover {
+            color: #30DC30;
+        }
+
+        .mention-item p {
+            margin: 8px 0;
+            font-size: 10pt;
+            text-align: left;
+        }
+
+        .mention-meta {
+            font-size: 9pt;
+            color: #A2ACB4;
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #A2ACB4;
+        }
+
+        .score-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 9pt;
+            font-weight: bold;
+            color: white;
+        }
+
+        .score-high { background: #e05a20; }
+        .score-medium { background: #30DC30; color: #2D3031; }
+        .score-low { background: #A2ACB4; }
+
+        .sentiment-positive { color: #30DC30; }
+        .sentiment-negative { color: #e05a20; }
+        .sentiment-neutral { color: #A2ACB4; }
+
+        .csv-section {
+            margin-top: 40px;
+            page-break-before: always;
+        }
+
+        .csv-toolbar {
+            background: #f8f9fa;
+            border: 1px solid #A2ACB4;
+            padding: 12px;
+            margin: 14px 0 10px 0;
+        }
+
+        .toolbar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(140px, 1fr));
+            gap: 10px;
+            align-items: end;
+        }
+
+        .toolbar-field label {
+            display: block;
+            font-size: 8pt;
+            color: #2D3031;
+            font-weight: bold;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .toolbar-field input,
+        .toolbar-field select {
+            width: 100%;
+            border: 1px solid #A2ACB4;
+            background: white;
+            padding: 6px 8px;
+            font-size: 9pt;
+            color: #2D3031;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .toolbar-button {
+            border: 1px solid #2D3031;
+            background: #2D3031;
+            color: white;
+            font-size: 8pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 7px 10px;
+            cursor: pointer;
+        }
+
+        .toolbar-button:hover {
+            background: #30DC30;
+            border-color: #30DC30;
+            color: #2D3031;
+        }
+
+        .toolbar-meta {
+            margin-top: 10px;
+            font-size: 9pt;
+            color: #A2ACB4;
+        }
+
+        .csv-table-wrap {
+            overflow-x: auto;
+            border: 1px solid #A2ACB4;
+        }
+
+        .csv-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8pt;
+            margin: 0;
+            min-width: 900px;
+        }
+
+        .csv-table th {
+            background: #2D3031;
+            color: white;
+            padding: 8px 6px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 8pt;
+        }
+
+        .csv-table td {
+            padding: 6px;
+            border: 1px solid #A2ACB4;
+            vertical-align: top;
+            font-size: 8pt;
+        }
+
+        .csv-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .url-cell {
+            word-break: break-all;
+            max-width: 180px;
+        }
+
+        .row-tag {
+            display: inline-block;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 7pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .row-tag-live {
+            background: #eaf7ea;
+            color: #1f6b1f;
+            border: 1px solid #30DC30;
+        }
+
+        .row-tag-historical {
+            background: #fff2e6;
+            color: #7a3e00;
+            border: 1px solid #f0b36e;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 2px solid #A2ACB4;
+            font-size: 9pt;
+            color: #A2ACB4;
+            text-align: center;
+        }
+
+        @media (max-width: 900px) {
+            .toolbar-grid {
+                grid-template-columns: repeat(2, minmax(140px, 1fr));
+            }
+        }
+
+        @media print {
+            body { padding: 0; }
+            .csv-toolbar { display: none; }
+            .csv-table-wrap { overflow: visible; border: none; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Brand Monitor Report</h1>
+    <div class="report-date">{{ scan_date }} | {{ scan_period }}</div>
+
+    {% if summary.total_new == 0 %}
+    <div class="no-new">
+        <p>No new brand mentions discovered in this scan.</p>
+        <p style="font-size: 10pt;">Cumulative mentions tracked: {{ summary.total_cumulative }}</p>
+    </div>
+    {% else %}
+
+    <div class="summary-stats">
+        <div class="stat-card">
+            <div class="count">{{ summary.total_new }}</div>
+            <div class="label">New Mentions</div>
+        </div>
+        <div class="stat-card">
+            <div class="count">{{ summary.highlights }}</div>
+            <div class="label">Highlights</div>
+        </div>
+        <div class="stat-card">
+            <div class="count">{{ summary.total_cumulative }}</div>
+            <div class="label">Total Tracked</div>
+        </div>
+    </div>
+
+    {% if brand_stats %}
+    <h2>Brand Mention Breakdown</h2>
+    <div class="brand-stats">
+        {% for brand in brand_stats %}
+        <div class="brand-card">
+            <h4>{{ brand.name }}</h4>
+            <div class="count">{{ brand.count }}</div>
+            <div class="label">Mentions</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if type_stats %}
+    <h2>Content Type Distribution</h2>
+    <table class="stats-table">
+        <tr>
+            <th>Content Type</th>
+            <th>Count</th>
+            <th>Percentage</th>
+        </tr>
+        {% for t in type_stats %}
+        <tr>
+            <td>{{ t.type }}</td>
+            <td>{{ t.count }}</td>
+            <td>{{ t.percentage }}%</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    {% if highlights %}
+    <h2>Highlights</h2>
+    <p>Mentions with signal score {{ thresholds.highlight }}+ indicating high-value brand visibility.</p>
+    {% for m in highlights %}
+    <div class="mention-item highlight">
+        <h4>
+            <a href="{{ m.url }}" target="_blank">{{ m.title or 'Untitled' }}</a>
+            <span class="score-badge score-high">{{ m.signal_score }}</span>
+        </h4>
+        <p><strong>{{ m.brand_name }}</strong> {% if m.product %} &mdash; {{ m.product }}{% endif %}</p>
+        {% if m.snippet %}
+        <p>{{ m.snippet[:400] }}</p>
+        {% endif %}
+        <div class="mention-meta">
+            <strong>Source:</strong> {{ m.source_name }} ({{ m.source_type | replace('_', ' ') | title }})
+            | <strong>Published:</strong> {{ m.published_date or 'Unknown' }}
+            | <strong>Sentiment:</strong> <span class="sentiment-{{ m.sentiment or 'neutral' }}">{{ m.sentiment or 'neutral' }}</span>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% for brand_name, mentions in brands_with_mentions.items() %}
+    <h2>{{ brand_name }}</h2>
+    <p><strong>New Mentions:</strong> {{ mentions | length }}</p>
+    {% for m in mentions %}
+    {% if m.signal_score | int < thresholds.highlight %}
+    <div class="mention-item">
+        <h4>
+            <a href="{{ m.url }}" target="_blank">{{ m.title or 'Untitled' }}</a>
+            {% if m.signal_score | int >= thresholds.notify %}
+            <span class="score-badge score-medium">{{ m.signal_score }}</span>
+            {% else %}
+            <span class="score-badge score-low">{{ m.signal_score }}</span>
+            {% endif %}
+        </h4>
+        <p><strong>Product:</strong> {{ m.product or 'General' }}</p>
+        {% if m.snippet %}
+        <p>{{ m.snippet[:400] }}</p>
+        {% endif %}
+        <div class="mention-meta">
+            <strong>Source:</strong> {{ m.source_name }} ({{ m.source_type | replace('_', ' ') | title }})
+            | <strong>Published:</strong> {{ m.published_date or 'Unknown' }}
+            | <strong>Sentiment:</strong> <span class="sentiment-{{ m.sentiment or 'neutral' }}">{{ m.sentiment or 'neutral' }}</span>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+
+    {% endif %}
+
+    {% if all_cumulative %}
+    <div class="csv-section">
+        <h2>Cumulative Mention Log</h2>
+        <p>All {{ all_cumulative | length }} tracked mentions. Use search, filters, and sort controls to explore quickly.</p>
+
+        <div class="csv-toolbar">
+            <div class="toolbar-grid">
+                <div class="toolbar-field">
+                    <label for="mention-search">Search</label>
+                    <input id="mention-search" type="text" placeholder="Title, source, product, snippet">
+                </div>
+                <div class="toolbar-field">
+                    <label for="brand-filter">Brand</label>
+                    <select id="brand-filter">
+                        <option value="">All Brands</option>
+                    </select>
+                </div>
+                <div class="toolbar-field">
+                    <label for="type-filter">Source Type</label>
+                    <select id="type-filter">
+                        <option value="">All Types</option>
+                    </select>
+                </div>
+                <div class="toolbar-field">
+                    <label for="origin-filter">Origin</label>
+                    <select id="origin-filter">
+                        <option value="">Live + Historical</option>
+                        <option value="live">Live</option>
+                        <option value="historical">Historical</option>
+                    </select>
+                </div>
+                <div class="toolbar-field">
+                    <label for="score-filter">Min Score</label>
+                    <input id="score-filter" type="number" min="0" max="100" step="1" placeholder="0">
+                </div>
+                <div class="toolbar-field">
+                    <label for="sort-select">Sort</label>
+                    <select id="sort-select">
+                        <option value="score_desc">Score High to Low</option>
+                        <option value="score_asc">Score Low to High</option>
+                        <option value="date_desc">Date Newest First</option>
+                        <option value="date_asc">Date Oldest First</option>
+                        <option value="brand_asc">Brand A to Z</option>
+                        <option value="brand_desc">Brand Z to A</option>
+                        <option value="source_asc">Source A to Z</option>
+                        <option value="source_desc">Source Z to A</option>
+                    </select>
+                </div>
+                <div class="toolbar-actions">
+                    <button class="toolbar-button" type="button" id="reset-filters">Reset</button>
+                </div>
+            </div>
+            <div id="result-count" class="toolbar-meta"></div>
+        </div>
+
+        <div class="csv-table-wrap">
+            <table class="csv-table" id="cumulative-table">
+                <thead>
+                    <tr>
+                        <th>Brand</th>
+                        <th>Product</th>
+                        <th>Source</th>
+                        <th>Type</th>
+                        <th>Date</th>
+                        <th>Score</th>
+                        <th>Origin</th>
+                        <th>Link</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in all_cumulative | sort(attribute='signal_score', reverse=true) %}
+                    {% set is_historical = (m.is_historical_seed or 'False') == 'True' %}
+                    <tr
+                        data-brand="{{ (m.brand_name or '') | lower }}"
+                        data-brand-label="{{ m.brand_name or '' }}"
+                        data-type="{{ (m.source_type or '') | lower }}"
+                        data-type-label="{{ (m.source_type or '') | replace('_', ' ') | title }}"
+                        data-source="{{ (m.source_name or '') | lower }}"
+                        data-score="{{ m.signal_score or 0 }}"
+                        data-date="{{ m.published_date or '' }}"
+                        data-origin="{{ 'historical' if is_historical else 'live' }}"
+                        data-search="{{ ((m.brand_name or '') ~ ' ' ~ (m.product or '') ~ ' ' ~ (m.source_name or '') ~ ' ' ~ (m.title or '') ~ ' ' ~ (m.snippet or '')) | lower }}"
+                    >
+                        <td>{{ m.brand_name }}</td>
+                        <td>{{ m.product }}</td>
+                        <td>{{ m.source_name }}</td>
+                        <td>{{ m.source_type | replace('_', ' ') | title }}</td>
+                        <td>{{ m.published_date or '-' }}</td>
+                        <td>{{ m.signal_score }}</td>
+                        <td>
+                            {% if is_historical %}
+                            <span class="row-tag row-tag-historical">Historical{% if m.historical_quality_tier %} {{ m.historical_quality_tier }}{% endif %}</span>
+                            {% else %}
+                            <span class="row-tag row-tag-live">Live</span>
+                            {% endif %}
+                        </td>
+                        <td class="url-cell"><a href="{{ m.url }}" target="_blank">{{ m.domain or 'link' }}</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <p style="margin-top: 25px; font-size: 9pt; color: #A2ACB4;">
+            <em>Signal Score: Combined metric of source authority, content depth, recency, and sentiment. Higher scores indicate more valuable mentions.</em>
+        </p>
+    </div>
+    {% endif %}
+
+    <script>
+        (function () {
+            var table = document.getElementById("cumulative-table");
+            if (!table) return;
+
+            var tbody = table.querySelector("tbody");
+            var allRows = Array.prototype.slice.call(tbody.querySelectorAll("tr"));
+
+            var searchInput = document.getElementById("mention-search");
+            var brandFilter = document.getElementById("brand-filter");
+            var typeFilter = document.getElementById("type-filter");
+            var originFilter = document.getElementById("origin-filter");
+            var scoreFilter = document.getElementById("score-filter");
+            var sortSelect = document.getElementById("sort-select");
+            var resetButton = document.getElementById("reset-filters");
+            var resultCount = document.getElementById("result-count");
+
+            function uniqueSorted(values) {
+                return Array.from(new Set(values.filter(Boolean))).sort(function (a, b) {
+                    return a.localeCompare(b);
+                });
+            }
+
+            function populateSelect(select, values) {
+                values.forEach(function (v) {
+                    var option = document.createElement("option");
+                    option.value = v.toLowerCase();
+                    option.textContent = v;
+                    select.appendChild(option);
+                });
+            }
+
+            populateSelect(brandFilter, uniqueSorted(allRows.map(function (r) { return r.dataset.brandLabel; })));
+            populateSelect(typeFilter, uniqueSorted(allRows.map(function (r) { return r.dataset.typeLabel; })));
+
+            function parseDateValue(value) {
+                if (!value) return Number.NEGATIVE_INFINITY;
+                var isoDay = /^(\d{4})-(\d{2})-(\d{2})$/;
+                var isoMonth = /^(\d{4})-(\d{2})$/;
+                var isoYear = /^(\d{4})$/;
+                if (isoDay.test(value)) return Date.parse(value + "T00:00:00Z");
+                if (isoMonth.test(value)) return Date.parse(value + "-01T00:00:00Z");
+                if (isoYear.test(value)) return Date.parse(value + "-01-01T00:00:00Z");
+                var parsed = Date.parse(value);
+                return Number.isNaN(parsed) ? Number.NEGATIVE_INFINITY : parsed;
+            }
+
+            function sortRows(rows) {
+                var mode = sortSelect.value || "score_desc";
+                var parts = mode.split("_");
+                var key = parts[0];
+                var dir = parts[1] === "asc" ? 1 : -1;
+
+                rows.sort(function (a, b) {
+                    var av;
+                    var bv;
+
+                    if (key === "score") {
+                        av = parseFloat(a.dataset.score || "0");
+                        bv = parseFloat(b.dataset.score || "0");
+                    } else if (key === "date") {
+                        av = parseDateValue(a.dataset.date || "");
+                        bv = parseDateValue(b.dataset.date || "");
+                    } else if (key === "brand") {
+                        av = (a.dataset.brandLabel || "").toLowerCase();
+                        bv = (b.dataset.brandLabel || "").toLowerCase();
+                    } else if (key === "source") {
+                        av = (a.dataset.source || "").toLowerCase();
+                        bv = (b.dataset.source || "").toLowerCase();
+                    } else {
+                        av = (a.dataset.search || "").toLowerCase();
+                        bv = (b.dataset.search || "").toLowerCase();
+                    }
+
+                    if (av < bv) return -1 * dir;
+                    if (av > bv) return 1 * dir;
+                    return 0;
+                });
+            }
+
+            function apply() {
+                var query = (searchInput.value || "").trim().toLowerCase();
+                var brand = (brandFilter.value || "").trim().toLowerCase();
+                var type = (typeFilter.value || "").trim().toLowerCase();
+                var origin = (originFilter.value || "").trim().toLowerCase();
+                var minScore = parseFloat((scoreFilter.value || "").trim());
+                if (Number.isNaN(minScore)) minScore = 0;
+
+                var filtered = allRows.filter(function (row) {
+                    if (query && row.dataset.search.indexOf(query) === -1) return false;
+                    if (brand && row.dataset.brand !== brand) return false;
+                    if (type && row.dataset.type !== type) return false;
+                    if (origin && row.dataset.origin !== origin) return false;
+                    if (parseFloat(row.dataset.score || "0") < minScore) return false;
+                    return true;
+                });
+
+                sortRows(filtered);
+                tbody.innerHTML = "";
+                filtered.forEach(function (row) { tbody.appendChild(row); });
+
+                resultCount.textContent = "Showing " + filtered.length + " of " + allRows.length + " mentions";
+            }
+
+            searchInput.addEventListener("input", apply);
+            brandFilter.addEventListener("change", apply);
+            typeFilter.addEventListener("change", apply);
+            originFilter.addEventListener("change", apply);
+            scoreFilter.addEventListener("input", apply);
+            sortSelect.addEventListener("change", apply);
+
+            resetButton.addEventListener("click", function () {
+                searchInput.value = "";
+                brandFilter.value = "";
+                typeFilter.value = "";
+                originFilter.value = "";
+                scoreFilter.value = "";
+                sortSelect.value = "score_desc";
+                apply();
+            });
+
+            apply();
+        })();
+    </script>
+
+    <div class="footer">
+        <p>Brand Monitor | Generated automatically by CI/CD pipeline</p>
+        <p>Report issues: <a href="https://github.com/sbc1-code/brand-monitor/issues">brand-monitor</a></p>
+    </div>
+</body>
+</html>
