@@ -415,6 +415,46 @@
         .footer a { color: var(--text-muted); }
         .footer a:hover { color: var(--accent); }
 
+        /* Brand filter tabs */
+        .brand-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 20px 0 24px 0;
+        }
+
+        .brand-tab {
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-muted);
+            font-family: var(--font);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 7px 14px;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+        }
+
+        .brand-tab:hover {
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        .brand-tab.active {
+            background: var(--accent-dim);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .brand-section {
+            display: none;
+        }
+
+        .brand-section.visible {
+            display: block;
+        }
+
         @media (max-width: 700px) {
             .summary-stats { grid-template-columns: 1fr; }
             .toolbar-grid { grid-template-columns: 1fr 1fr; }
@@ -536,7 +576,19 @@
     </div>
 </div>
 
-<h2>BrandAlpha</h2>
+<h2>Mentions by Brand</h2>
+<div class="brand-tabs" id="brand-tabs">
+    <button class="brand-tab active" type="button" data-brand="all">All Brands</button>
+    <button class="brand-tab" type="button" data-brand="brandalpha">BrandAlpha</button>
+    <button class="brand-tab" type="button" data-brand="brandbeta-pro">BrandBeta Pro</button>
+    <button class="brand-tab" type="button" data-brand="brandgamma-systems">BrandGamma Systems</button>
+    <button class="brand-tab" type="button" data-brand="branddelta-locators">BrandDelta Locators</button>
+    <button class="brand-tab" type="button" data-brand="brandepsilon-track">BrandEpsilon Track</button>
+    <button class="brand-tab" type="button" data-brand="brandzeta-live">BrandZeta Live</button>
+</div>
+
+<div class="brand-section visible" data-brand-section="brandalpha">
+<h3>BrandAlpha</h3>
 <p><strong>New Mentions:</strong> 5</p>
 
 <div class="mention-item">
@@ -567,7 +619,10 @@
     </div>
 </div>
 
-<h2>BrandBeta Pro</h2>
+</div>
+
+<div class="brand-section visible" data-brand-section="brandbeta-pro">
+<h3>BrandBeta Pro</h3>
 <p><strong>New Mentions:</strong> 4</p>
 
 <div class="mention-item">
@@ -598,7 +653,10 @@
     </div>
 </div>
 
-<h2>BrandGamma Systems</h2>
+</div>
+
+<div class="brand-section visible" data-brand-section="brandgamma-systems">
+<h3>BrandGamma Systems</h3>
 <p><strong>New Mentions:</strong> 2</p>
 
 <div class="mention-item">
@@ -615,7 +673,10 @@
     </div>
 </div>
 
-<h2>BrandDelta Locators</h2>
+</div>
+
+<div class="brand-section visible" data-brand-section="branddelta-locators">
+<h3>BrandDelta Locators</h3>
 <p><strong>New Mentions:</strong> 1</p>
 
 <div class="mention-item">
@@ -632,7 +693,10 @@
     </div>
 </div>
 
-<h2>BrandEpsilon Track</h2>
+</div>
+
+<div class="brand-section visible" data-brand-section="brandepsilon-track">
+<h3>BrandEpsilon Track</h3>
 <p><strong>New Mentions:</strong> 1</p>
 
 <div class="mention-item">
@@ -649,7 +713,10 @@
     </div>
 </div>
 
-<h2>BrandZeta Live</h2>
+</div>
+
+<div class="brand-section visible" data-brand-section="brandzeta-live">
+<h3>BrandZeta Live</h3>
 <p><strong>New Mentions:</strong> 1</p>
 
 <div class="mention-item">
@@ -664,6 +731,8 @@
         | <strong>Published:</strong> 2026-03-03
         | <strong>Sentiment:</strong> <span class="sentiment-positive">positive</span>
     </div>
+</div>
+
 </div>
 
 <!-- Cumulative Mention Log -->
@@ -777,8 +846,8 @@
                 <tr data-brand="brandbeta pro" data-brand-label="BrandBeta Pro" data-type="industry blog" data-type-label="Industry Blog" data-source="sewer solutions" data-score="73" data-date="2026-02-18" data-origin="historical" data-search="brandbeta pro sewer solutions industry blog smartsense review field test">
                     <td>BrandBeta Pro</td><td>BrandBeta SmartSense</td><td>Sewer Solutions</td><td>Industry Blog</td><td>2026-02-18</td><td>73</td><td><span class="row-tag row-tag-historical">Historical</span></td><td class="url-cell"><a href="#">link</a></td>
                 </tr>
-                <tr data-brand="brandgamma systems" data-brand-label="BrandGamma Systems" data-type="trade publication" data-type-label="Trade Publication" data-source="subsea tech review" data-score="70" data-date="2026-02-12" data-origin="historical" data-search="brandgamma systems subsea tech review trade publication underwater lighting">
-                    <td>BrandGamma Systems</td><td>BrandGamma Underwater Light</td><td>Subsea Tech Review</td><td>Trade Publication</td><td>2026-02-12</td><td>70</td><td><span class="row-tag row-tag-historical">Historical</span></td><td class="url-cell"><a href="#">link</a></td>
+                <tr data-brand="brandgamma systems" data-brand-label="BrandGamma Systems" data-type="trade publication" data-type-label="Trade Publication" data-source="subsea tech review" data-score="70" data-date="2026-02-12" data-origin="historical" data-search="brandgamma systems subsea tech review trade publication subsea illumination">
+                    <td>BrandGamma Systems</td><td>BrandGamma Subsea Illuminator</td><td>Subsea Tech Review</td><td>Trade Publication</td><td>2026-02-12</td><td>70</td><td><span class="row-tag row-tag-historical">Historical</span></td><td class="url-cell"><a href="#">link</a></td>
                 </tr>
                 <tr data-brand="branddelta locators" data-brand-label="BrandDelta Locators" data-type="industry blog" data-type-label="Industry Blog" data-source="locate insider" data-score="66" data-date="2026-02-14" data-origin="historical" data-search="branddelta locators locate insider industry blog sr-20 comparison">
                     <td>BrandDelta Locators</td><td>BrandDelta SR-20</td><td>Locate Insider</td><td>Industry Blog</td><td>2026-02-14</td><td>66</td><td><span class="row-tag row-tag-historical">Historical</span></td><td class="url-cell"><a href="#">link</a></td>
@@ -795,7 +864,7 @@
                 <tr data-brand="brandbeta pro" data-brand-label="BrandBeta Pro" data-type="trade publication" data-type-label="Trade Publication" data-source="trenchless technology" data-score="76" data-date="2026-01-28" data-origin="historical" data-search="brandbeta pro trenchless technology trade publication mini pro trenchless review">
                     <td>BrandBeta Pro</td><td>BrandBeta Mini Pro</td><td>Trenchless Technology</td><td>Trade Publication</td><td>2026-01-28</td><td>76</td><td><span class="row-tag row-tag-historical">Historical</span></td><td class="url-cell"><a href="#">link</a></td>
                 </tr>
-                <tr data-brand="brandgamma systems" data-brand-label="BrandGamma Systems" data-type="news article" data-type-label="News Article" data-source="marine technology news" data-score="69" data-date="2026-01-22" data-origin="historical" data-search="brandgamma systems marine technology news article rov camera deep sea">
+                <tr data-brand="brandgamma systems" data-brand-label="BrandGamma Systems" data-type="news article" data-type-label="News Article" data-source="marine technology news" data-score="69" data-date="2026-01-22" data-origin="historical" data-search="brandgamma systems marine technology news article rov camera subsea">
                     <td>BrandGamma Systems</td><td>GammaCam Pro</td><td>Marine Technology News</td><td>News Article</td><td>2026-01-22</td><td>69</td><td><span class="row-tag row-tag-historical">Historical</span></td><td class="url-cell"><a href="#">link</a></td>
                 </tr>
                 <tr data-brand="branddelta locators" data-brand-label="BrandDelta Locators" data-type="forum post" data-type-label="Forum Post" data-source="contractor talk" data-score="35" data-date="2026-01-15" data-origin="historical" data-search="branddelta locators contractor talk forum post sr-24 reliability field">
@@ -831,6 +900,29 @@
             toggle.textContent = "Light";
             localStorage.setItem("bm-theme", "dark");
         }
+    });
+
+    // Brand tabs filtering
+    var brandTabs = document.querySelectorAll(".brand-tab");
+    var brandSections = document.querySelectorAll(".brand-section");
+
+    brandTabs.forEach(function (tab) {
+        tab.addEventListener("click", function () {
+            brandTabs.forEach(function (t) { t.classList.remove("active"); });
+            tab.classList.add("active");
+
+            var selectedBrand = tab.dataset.brand;
+
+            brandSections.forEach(function (section) {
+                if (selectedBrand === "all") {
+                    section.classList.add("visible");
+                } else if (section.dataset.brandSection === selectedBrand) {
+                    section.classList.add("visible");
+                } else {
+                    section.classList.remove("visible");
+                }
+            });
+        });
     });
 
     // Table filtering (same logic as report template)
@@ -946,7 +1038,7 @@
 
 <div class="footer">
     <p>Brand Monitor | Automated scanning, scoring, and reporting pipeline</p>
-    <p><a href="https://github.com/sbc1-code/brand-monitor">github.com/sbc1-code/brand-monitor</a></p>
+    <p><a href="https://github.com/sbc1-code/brand-monitor" target="_blank" rel="noopener noreferrer">github.com/sbc1-code/brand-monitor</a></p>
 </div>
 
 </body>
