@@ -34,6 +34,23 @@ ROOT = Path(__file__).resolve().parent.parent
 CONFIG_DIR = ROOT / "config"
 DATA_DIR = ROOT / "data"
 
+# Per-scanner health counters. Populated by each scanner; read in main()
+# so total scanner failure exits non-zero instead of looking like "0 mentions".
+SCANNER_RUNS = 0
+SCANNER_FAILS = 0
+
+
+def _record_scanner_failure(scanner_name, keyword, err):
+    """Bump the failure counter and log. Called by scanner except blocks."""
+    global SCANNER_FAILS
+    SCANNER_FAILS += 1
+    print(f"  [FAIL] {scanner_name} error for {keyword!r}: {err}", file=sys.stderr)
+
+
+def _record_scanner_run():
+    global SCANNER_RUNS
+    SCANNER_RUNS += 1
+
 # Load configs
 with open(CONFIG_DIR / "brands.json") as f:
     BRANDS_CONFIG = json.load(f)
@@ -283,8 +300,10 @@ def scan_google_news_rss(brand):
             time.sleep(rate_limit)
 
         except Exception as e:
-            print(f"  [WARN] Google News RSS error for '{keyword}': {e}", file=sys.stderr)
+            _record_scanner_failure("google_news_rss", keyword, e)
             time.sleep(rate_limit)
+        finally:
+            _record_scanner_run()
 
     return mentions
 
@@ -352,8 +371,10 @@ def scan_reddit(brand):
             time.sleep(rate_limit)
 
         except Exception as e:
-            print(f"  [WARN] Reddit error for '{keyword}': {e}", file=sys.stderr)
+            _record_scanner_failure("reddit", keyword, e)
             time.sleep(rate_limit)
+        finally:
+            _record_scanner_run()
 
     return mentions
 
@@ -408,7 +429,9 @@ def scan_known_rss_feeds(brand):
                 })
 
         except Exception as e:
-            print(f"  [WARN] RSS error for {source['name']}: {e}", file=sys.stderr)
+            _record_scanner_failure("known_rss", source.get("name", "?"), e)
+        finally:
+            _record_scanner_run()
 
     return mentions
 
@@ -459,9 +482,11 @@ def scan_google_cse(brand):
                 resp.raise_for_status()
                 payload = resp.json()
             except Exception as e:
-                print(f"  [WARN] Google CSE error for '{keyword}': {e}", file=sys.stderr)
+                _record_scanner_failure("google_cse", keyword, e)
                 time.sleep(rate_limit)
                 break
+            finally:
+                _record_scanner_run()
 
             items = payload.get("items", [])
             if not items:
@@ -583,9 +608,28 @@ def main():
         writer.writerows(unique)
 
     print(f"Wrote: {output_file}")
-    return len(unique)
+
+    # Scanner health summary. Total scanner failure produces "0 mentions"
+    # that looks identical to a real quiet period. Exit non-zero so CI and
+    # downstream alerting treat total-failure as failure, not as a signal.
+    fail_ratio = (SCANNER_FAILS / SCANNER_RUNS) if SCANNER_RUNS else 1.0
+    print()
+    print(f"Scanner runs: {SCANNER_RUNS}")
+    print(f"Scanner failures: {SCANNER_FAILS} ({fail_ratio * 100:.0f}%)")
+
+    if SCANNER_RUNS == 0:
+        print("[FAIL] No scanner ran. Configuration problem.", file=sys.stderr)
+        return len(unique), 2
+    if fail_ratio >= 0.5:
+        print(f"[FAIL] More than half of scanner invocations failed ({SCANNER_FAILS}/{SCANNER_RUNS}).", file=sys.stderr)
+        return len(unique), 1
+    if len(unique) == 0 and SCANNER_FAILS > 0:
+        print("[WARN] Zero mentions produced and some scanners failed. Treating as degraded.", file=sys.stderr)
+        return len(unique), 1
+
+    return len(unique), 0
 
 
 if __name__ == "__main__":
-    count = main()
-    sys.exit(0 if count >= 0 else 1)
+    count, exit_code = main()
+    sys.exit(exit_code)
