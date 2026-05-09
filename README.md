@@ -1,6 +1,6 @@
 # Brand Monitor
 
-Automated brand mentions and syndication tracking for a multi-brand portfolio.
+Automated brand mentions and syndication tracking for a multi-brand portfolio. Pipeline runs daily across three real brand properties; brand names anonymized for client confidentiality.
 
 ## What It Does
 
