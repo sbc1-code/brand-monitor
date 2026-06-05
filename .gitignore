@@ -3,3 +3,4 @@ __pycache__/
 .pip-cache/
 data/*
 !data/.gitkeep
+!data/mention_log.csv

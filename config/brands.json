@@ -1,78 +1,99 @@
 {
   "brands": [
     {
-      "id": "brandaplha",
-      "name": "BrandAlpha",
+      "id": "openai",
+      "name": "OpenAI",
       "keywords": [
-        "\"BrandAlpha\"",
-        "\"BrandAlpha Inc\""
+        "\"OpenAI\"",
+        "\"ChatGPT\"",
+        "\"OpenAI API\""
+      ],
+      "core_terms": [
+        "openai",
+        "chatgpt"
+      ],
+      "products": [
+        {
+          "name": "ChatGPT",
+          "patterns": ["chatgpt"]
+        },
+        {
+          "name": "OpenAI API",
+          "patterns": ["openai api", "responses api", "assistants api"]
+        },
+        {
+          "name": "Sora",
+          "patterns": ["sora"]
+        }
       ],
       "exclude_patterns": [
-        "brandaplha.example.com",
-        "support.brandbeta.example.com"
+        "openai.com",
+        "help.openai.com",
+        "platform.openai.com"
       ]
     },
     {
-      "id": "brandbeta",
-      "name": "BrandBeta Pro",
+      "id": "github",
+      "name": "GitHub",
       "keywords": [
-        "\"BrandBeta\"",
-        "\"BrandBeta Pro\"",
-        "\"BrandBeta SmartSense\"",
-        "\"BrandBeta MiniReel\"",
-        "\"BrandBeta Mini Pro\"",
-        "\"BrandBeta Compact\"",
-        "\"Digital Self-Leveling\" BrandBeta"
+        "\"GitHub\"",
+        "\"GitHub Copilot\"",
+        "\"GitHub Actions\""
+      ],
+      "core_terms": [
+        "github",
+        "copilot"
+      ],
+      "products": [
+        {
+          "name": "GitHub Copilot",
+          "patterns": ["github copilot", "copilot"]
+        },
+        {
+          "name": "GitHub Actions",
+          "patterns": ["github actions", "actions workflow"]
+        },
+        {
+          "name": "GitHub Pages",
+          "patterns": ["github pages"]
+        }
       ],
       "exclude_patterns": [
-        "support.brandbeta.example.com",
-        "partnerstore.example.com/shop"
+        "github.com",
+        "docs.github.com"
       ]
     },
     {
-      "id": "brandgamma",
-      "name": "BrandGamma Systems",
+      "id": "vercel",
+      "name": "Vercel",
       "keywords": [
-        "\"BrandGamma Systems\"",
-        "\"BrandGamma Power and Light\"",
-        "\"BGSL\" subsea",
-        "\"GammaCam Pro\"",
-        "\"BrandGamma\" ROV camera",
-        "\"BrandGamma\" underwater light"
+        "\"Vercel\"",
+        "\"Next.js\"",
+        "\"Vercel AI SDK\""
+      ],
+      "core_terms": [
+        "vercel",
+        "next.js",
+        "nextjs"
+      ],
+      "products": [
+        {
+          "name": "Next.js",
+          "patterns": ["next.js", "nextjs"]
+        },
+        {
+          "name": "Vercel AI SDK",
+          "patterns": ["vercel ai sdk", "ai sdk"]
+        },
+        {
+          "name": "Vercel Platform",
+          "patterns": ["vercel platform", "vercel functions"]
+        }
       ],
       "exclude_patterns": [
-        "brandgamma.example.com"
+        "vercel.com",
+        "nextjs.org"
       ]
-    },
-    {
-      "id": "branddelta",
-      "name": "BrandDelta Locators",
-      "keywords": [
-        "\"BrandDelta\"",
-        "\"BrandDelta Pro\"",
-        "\"BrandDelta SR-24\"",
-        "\"BrandDelta SR-20\""
-      ],
-      "exclude_patterns": []
-    },
-    {
-      "id": "brandepsilon",
-      "name": "BrandEpsilon Track",
-      "keywords": [
-        "\"BrandEpsilon\"",
-        "\"BrandEpsilon Scout\"",
-        "\"BrandEpsilon Pro\""
-      ],
-      "exclude_patterns": []
-    },
-    {
-      "id": "brandzeta",
-      "name": "BrandZeta Live",
-      "keywords": [
-        "\"BrandZeta Live\"",
-        "\"BrandZeta Live\" app"
-      ],
-      "exclude_patterns": []
     }
   ],
   "scan_settings": {

@@ -13,9 +13,10 @@
       "base_url": "https://www.reddit.com/search.json?q={query}&sort=new&t=week&limit=25",
       "description": "Reddit search API (public JSON)",
       "rate_limit_seconds": 5,
-      "user_agent": "BrandMonitor/1.0"
+      "user_agent": "BrandMonitor/1.0",
+      "fail_on_error": false
     },
-    "youtube_rss": {
+    "youtube": {
       "enabled": false,
       "type": "api",
       "description": "YouTube Data API v3 (requires API key)",
@@ -38,45 +39,30 @@
       "type": "api",
       "description": "Google Analytics 4 Data API",
       "credentials_env": "GA4_SERVICE_ACCOUNT_JSON",
-      "note": "Future: Pull referral traffic data showing which external sites send visitors"
+      "note": "Optional: Pull referral traffic data showing which external sites send visitors"
     }
   },
   "known_sources": [
     {
-      "name": "Industry Trade Monthly",
-      "domain": "industrytrademag.example.com",
-      "rss": "https://www.industrytrademag.example.com/rss",
+      "name": "TechCrunch",
+      "domain": "techcrunch.com",
+      "rss": "https://techcrunch.com/feed/",
+      "source_type": "news_article",
       "check_rss": true
     },
     {
-      "name": "Pro Tools Review",
-      "domain": "protoolsreview.example.com",
-      "rss": "https://www.protoolsreview.example.com/feed/",
+      "name": "The Verge",
+      "domain": "theverge.com",
+      "rss": "https://www.theverge.com/rss/index.xml",
+      "source_type": "news_article",
       "check_rss": true
     },
     {
-      "name": "Facilities & Maintenance",
-      "domain": "facilitiesmag.example.com",
-      "rss": null,
-      "check_rss": false
-    },
-    {
-      "name": "HVAC Business Journal",
-      "domain": "hvacjournal.example.com",
-      "rss": null,
-      "check_rss": false
-    },
-    {
-      "name": "Ocean Science Today",
-      "domain": "oceansciencetoday.example.com",
-      "rss": null,
-      "check_rss": false
-    },
-    {
-      "name": "Marine Technology Review",
-      "domain": "marinetechreview.example.com",
-      "rss": null,
-      "check_rss": false
+      "name": "Hacker News",
+      "domain": "news.ycombinator.com",
+      "rss": "https://hnrss.org/frontpage",
+      "source_type": "forum_discussion",
+      "check_rss": true
     }
   ]
 }

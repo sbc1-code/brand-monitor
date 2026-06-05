@@ -8,7 +8,7 @@ Sources (no API keys needed):
   - Reddit JSON API
   - Known source RSS feeds
 
-Future sources (require API keys set as CI/CD variables):
+Optional sources (require API keys set as GitHub Actions secrets):
   - Google Custom Search API
   - YouTube Data API v3
   - Google Analytics 4
@@ -58,9 +58,7 @@ with open(CONFIG_DIR / "brands.json") as f:
 with open(CONFIG_DIR / "sources.json") as f:
     SOURCES_CONFIG = json.load(f)
 
-HEADERS = {
-    "User-Agent": "BrandMonitor/1.0 (internal brand tracking)"
-}
+HEADERS = {"User-Agent": "BrandMonitor/1.0 (https://github.com/sbc1-code/brand-monitor)"}
 
 CSV_FIELDS = [
     "mention_id", "scan_date", "brand_id", "brand_name", "product",
@@ -101,6 +99,26 @@ def extract_domain(url):
         return ""
 
 
+def parse_google_news_entry(entry):
+    """Return a cleaner article title and publisher for a Google News RSS entry."""
+    title = entry.get("title", "")
+    publisher = ""
+
+    source = entry.get("source", {})
+    if isinstance(source, dict):
+        publisher = source.get("title", "") or source.get("href", "")
+
+    if publisher and title.endswith(f" - {publisher}"):
+        title = title[: -(len(publisher) + 3)].strip()
+    elif not publisher and " - " in title:
+        article_title, maybe_publisher = title.rsplit(" - ", 1)
+        if maybe_publisher.strip():
+            title = article_title.strip()
+            publisher = maybe_publisher.strip()
+
+    return title, publisher
+
+
 def is_excluded(url, brand):
     """Check if URL matches brand's exclude patterns."""
     domain = extract_domain(url)
@@ -110,25 +128,28 @@ def is_excluded(url, brand):
     return False
 
 
+def normalize_keyword(keyword):
+    """Normalize a search keyword into a mention-matching term."""
+    return " ".join(keyword.strip().strip('"').lower().split())
+
+
+def get_brand_terms(brand):
+    """Return explicit core terms, falling back to configured keywords/name."""
+    configured = brand.get("core_terms") or []
+    terms = [normalize_keyword(term) for term in configured]
+    if not terms:
+        terms = [normalize_keyword(kw) for kw in brand.get("keywords", [])]
+    terms.append(normalize_keyword(brand.get("name", "")))
+    return sorted({term for term in terms if term}, key=len, reverse=True)
+
+
 def verify_brand_mention(title, snippet, brand):
     """Verify that the brand keyword actually appears in the result text.
     Reddit and other search engines return loose matches -- this filters out
     results where the brand name doesn't actually appear."""
     text = f"{title} {snippet}".lower()
 
-    # Primary check: does the brand's core name appear?
-    # These are the distinctive terms that definitively indicate a brand mention.
-    core_brand_terms = {
-        "brandaplha": ["brandalpha"],
-        "brandbeta": ["brandbeta"],
-        "brandgamma": ["brandgamma systems", "brandgamma power", "bgsl", "gammacam pro", "brandgamma light"],
-        "branddelta": ["branddelta"],
-        "brandepsilon": ["brandepsilon"],
-        "brandzeta": ["brandzeta live", "brandzeta"],
-    }
-
-    terms = core_brand_terms.get(brand["id"], [brand["id"]])
-    for term in terms:
+    for term in get_brand_terms(brand):
         if term in text:
             return True
 
@@ -149,11 +170,11 @@ def classify_source_type(domain, title="", snippet=""):
         return "app_store_review"
     if any(d in domain for d in ["homedepot.com", "lowes.com", "amazon.com"]):
         return "retail_review"
-    if any(d in domain for d in ["resellerdepot.example.com", "toolsupply.example.com"]):
-        return "reseller_listing"
-    if any(d in domain for d in ["research-institute.example.org", "marine-science.example.org"]):
+    if any(d in domain for d in ["amazon.com", "bestbuy.com", "walmart.com"]):
+        return "retail_review"
+    if any(d in domain for d in ["nature.com", "nih.gov", "arxiv.org", "ssrn.com"]):
         return "institutional"
-    if any(d in domain for d in ["industrytrademag.example.com", "facilitiesmag.example.com", "hvacjournal.example.com"]):
+    if any(d in domain for d in ["techcrunch.com", "theverge.com", "wired.com", "fastcompany.com"]):
         return "trade_publication"
 
     # Text signals
@@ -170,44 +191,18 @@ def classify_source_type(domain, title="", snippet=""):
 def classify_product(title, snippet, brand_id):
     """Try to identify the specific product mentioned."""
     text = f"{title} {snippet}".lower()
-    products = {
-        "brandbeta": [
-            ("MiniReel APX", ["minireel apx"]),
-            ("MiniReel Essentials", ["minireel essentials"]),
-            ("MiniReel", ["minireel"]),
-            ("MicroDrain APX", ["microdrain"]),
-            ("Mini Pro", ["mini pro"]),
-            ("Compact M40 DSL", ["m40 dsl", "compact m40"]),
-            ("Compact C40 DSL", ["c40 dsl", "compact c40"]),
-            ("BrandBeta (general)", []),
-        ],
-        "brandgamma": [
-            ("GammaCam Pro", ["gammacam pro", "gammacam"]),
-            ("BrandGamma (general)", []),
-        ],
-        "branddelta": [
-            ("SR-24", ["sr-24", "sr24"]),
-            ("SR-20", ["sr-20", "sr20"]),
-            ("BrandDelta (general)", []),
-        ],
-        "brandepsilon": [
-            ("Scout", ["epsilon scout", "scout locator"]),
-            ("BrandEpsilon (general)", []),
-        ],
-        "brandzeta": [
-            ("BrandZeta Live", []),
-        ],
-        "brandaplha": [
-            ("BrandAlpha (general)", []),
-        ],
-    }
+    brand = next((b for b in BRANDS_CONFIG["brands"] if b["id"] == brand_id), None)
+    if not brand:
+        return ""
 
-    for product_name, patterns in products.get(brand_id, []):
-        if not patterns:  # fallback / general
-            return product_name
-        for pattern in patterns:
-            if pattern in text:
+    for product in brand.get("products", []):
+        product_name = product.get("name", "")
+        for pattern in product.get("patterns", []):
+            if normalize_keyword(pattern) in text:
                 return product_name
+
+    if verify_brand_mention(title, snippet, brand):
+        return f"{brand.get('name', brand_id)} (general)"
 
     return ""
 
@@ -268,7 +263,7 @@ def scan_google_news_rss(brand):
                     continue
 
                 domain = extract_domain(link)
-                title = entry.get("title", "")
+                title, publisher = parse_google_news_entry(entry)
                 snippet = BeautifulSoup(
                     entry.get("summary", ""), "html.parser"
                 ).get_text()[:500]
@@ -284,8 +279,8 @@ def scan_google_news_rss(brand):
                     "brand_id": brand["id"],
                     "brand_name": brand["name"],
                     "product": classify_product(title, snippet, brand["id"]),
-                    "source_name": domain,
-                    "source_type": classify_source_type(domain, title, snippet),
+                    "source_name": publisher or domain,
+                    "source_type": "news_article",
                     "domain": domain,
                     "url": link,
                     "title": title,
@@ -371,7 +366,10 @@ def scan_reddit(brand):
             time.sleep(rate_limit)
 
         except Exception as e:
-            _record_scanner_failure("reddit", keyword, e)
+            if source_config.get("fail_on_error", False):
+                _record_scanner_failure("reddit", keyword, e)
+            else:
+                print(f"  [WARN] reddit error for {keyword!r}: {e}", file=sys.stderr)
             time.sleep(rate_limit)
         finally:
             _record_scanner_run()
@@ -429,14 +427,14 @@ def scan_known_rss_feeds(brand):
                 })
 
         except Exception as e:
-            _record_scanner_failure("known_rss", source.get("name", "?"), e)
+            print(f"  [WARN] known_rss error for {source.get('name', '?')!r}: {e}", file=sys.stderr)
         finally:
             _record_scanner_run()
 
     return mentions
 
 
-# ---------- FUTURE API SCANNERS (stubs) ----------
+# ---------- OPTIONAL API SCANNERS ----------
 
 def scan_google_cse(brand):
     """Google Custom Search API scanner (requires GOOGLE_CSE_KEY and GOOGLE_CSE_CX)."""
@@ -542,13 +540,15 @@ def scan_google_cse(brand):
 
 def scan_youtube_api(brand):
     """YouTube Data API v3 scanner (requires YOUTUBE_API_KEY)."""
-    if not SOURCES_CONFIG["sources"].get("youtube_rss", {}).get("enabled"):
+    source_config = SOURCES_CONFIG["sources"].get("youtube", {})
+    if not source_config.get("enabled"):
         return []
-    api_key = os.environ.get("YOUTUBE_API_KEY")
+    api_key = os.environ.get(source_config.get("api_key_env", "YOUTUBE_API_KEY"))
     if not api_key:
         print("  [INFO] YouTube API not configured (set YOUTUBE_API_KEY)", file=sys.stderr)
         return []
-    # TODO: Implement when API key is configured
+
+    print("  [INFO] YouTube scanner is disabled until YouTube parsing is implemented.", file=sys.stderr)
     return []
 
 
@@ -578,7 +578,7 @@ def main():
         print(f"  Known RSS: {len(rss)} results")
         all_mentions.extend(rss)
 
-        # Future scanners (stubs + gated API integrations)
+        # Optional scanners (gated API integrations)
         cse = scan_google_cse(brand)
         print(f"  Google CSE: {len(cse)} results")
         all_mentions.extend(cse)

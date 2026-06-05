@@ -1,12 +1,11 @@
 """
 Notification Engine
-Creates a GitLab issue with new worthy mentions.
-Uses GitLab's built-in notifications to email the configured project assignee.
+Creates a GitHub issue with new worthy mentions.
+Uses GitHub repository notifications for the owner/watchers.
 
-Requires CI/CD variables:
-  - GITLAB_TOKEN: Project access token or personal access token
-  - CI_PROJECT_ID: Set automatically by GitLab CI
-  - GITLAB_API_URL: Your GitLab instance API URL (e.g. https://gitlab.example.com/api/v4)
+Requires GitHub Actions variables:
+  - GITHUB_TOKEN: set automatically by GitHub Actions
+  - GITHUB_REPOSITORY: set automatically as owner/repo
 """
 
 import csv
@@ -27,12 +26,10 @@ with open(CONFIG_DIR / "scoring.json") as f:
 
 THRESHOLDS = SCORING["thresholds"]
 
-# GitLab API config — set these as CI/CD variables in your GitLab project
-GITLAB_URL = os.environ.get("CI_API_V4_URL", "https://gitlab.example.com/api/v4")
-GITLAB_TOKEN = os.environ.get("GITLAB_TOKEN", "")
-PROJECT_ID = os.environ.get("CI_PROJECT_ID", "YOUR_PROJECT_ID")
-ASSIGNEE_ID = os.environ.get("NOTIFY_ASSIGNEE_ID", "1")  # Set to your GitLab user ID
-PAGES_URL = os.environ.get("CI_PAGES_URL", "https://pages.example.com/brand-monitor")
+GITHUB_API_URL = os.environ.get("GITHUB_API_URL", "https://api.github.com")
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+GITHUB_REPOSITORY = os.environ.get("GITHUB_REPOSITORY", "sbc1-code/brand-monitor")
+PAGES_URL = os.environ.get("PAGES_URL", "https://sbc1-code.github.io/brand-monitor/")
 
 
 def load_csv(filepath):
@@ -43,7 +40,7 @@ def load_csv(filepath):
 
 
 def format_mention_markdown(mention):
-    """Format a single mention as GitLab-flavored markdown."""
+    """Format a single mention as GitHub-flavored markdown."""
     score = mention.get("signal_score", "?")
     title = mention.get("title", "Untitled")
     url = mention.get("url", "")
@@ -55,7 +52,6 @@ def format_mention_markdown(mention):
     snippet = mention.get("snippet", "")[:300]
     sentiment = mention.get("sentiment", "neutral")
 
-    # Sentiment indicator
     sent_icon = {"positive": "+", "negative": "!", "neutral": "~"}.get(sentiment, "~")
 
     lines = [
@@ -72,23 +68,30 @@ def format_mention_markdown(mention):
     return "\n".join(lines)
 
 
-def create_gitlab_issue(scored_mentions):
-    """Create a GitLab issue with the daily scan results."""
-    if not GITLAB_TOKEN:
-        print("[WARN] No GITLAB_TOKEN set. Skipping issue creation.")
-        print("Set GITLAB_TOKEN in CI/CD variables to enable notifications.")
+def create_github_issue(scored_mentions):
+    """Create a GitHub issue with the daily scan results."""
+    if not GITHUB_TOKEN:
+        print("[WARN] No GITHUB_TOKEN set. Skipping issue creation.")
+        print("GitHub Actions sets GITHUB_TOKEN automatically.")
         return None
 
     now = datetime.now(timezone.utc)
     date_str = now.strftime("%Y-%m-%d")
     date_display = now.strftime("%B %d, %Y")
 
-    # Separate by threshold
-    highlights = [m for m in scored_mentions if int(m.get("signal_score", 0)) >= THRESHOLDS["highlight"]]
-    worthy = [m for m in scored_mentions if int(m.get("signal_score", 0)) >= THRESHOLDS["notify"]]
-    other = [m for m in scored_mentions if int(m.get("signal_score", 0)) < THRESHOLDS["notify"]]
+    highlights = [
+        m for m in scored_mentions
+        if int(m.get("signal_score", 0)) >= THRESHOLDS["highlight"]
+    ]
+    worthy = [
+        m for m in scored_mentions
+        if int(m.get("signal_score", 0)) >= THRESHOLDS["notify"]
+    ]
+    other = [
+        m for m in scored_mentions
+        if int(m.get("signal_score", 0)) < THRESHOLDS["notify"]
+    ]
 
-    # Build issue body
     body_parts = [
         f"## Brand Mentions Scan - {date_display}",
         "",
@@ -104,56 +107,58 @@ def create_gitlab_issue(scored_mentions):
         body_parts.append("---")
         body_parts.append("## Highlights")
         body_parts.append("")
-        for m in highlights:
-            body_parts.append(format_mention_markdown(m))
+        for mention in highlights:
+            body_parts.append(format_mention_markdown(mention))
 
     if worthy:
-        non_highlight_worthy = [m for m in worthy if int(m.get("signal_score", 0)) < THRESHOLDS["highlight"]]
+        non_highlight_worthy = [
+            m for m in worthy
+            if int(m.get("signal_score", 0)) < THRESHOLDS["highlight"]
+        ]
         if non_highlight_worthy:
             body_parts.append("---")
             body_parts.append("## Notable Mentions")
             body_parts.append("")
-            for m in non_highlight_worthy:
-                body_parts.append(format_mention_markdown(m))
+            for mention in non_highlight_worthy:
+                body_parts.append(format_mention_markdown(mention))
 
     if other:
         body_parts.append("---")
         body_parts.append("<details>")
         body_parts.append(f"<summary>Other mentions ({len(other)})</summary>")
         body_parts.append("")
-        for m in other:
-            body_parts.append(format_mention_markdown(m))
+        for mention in other:
+            body_parts.append(format_mention_markdown(mention))
         body_parts.append("</details>")
 
     body_parts.append("")
     body_parts.append("---")
     body_parts.append(f"*Generated by Brand Monitor pipeline on {date_display}*")
 
-    description = "\n".join(body_parts)
-    title = f"Brand Mentions: {date_str} ({len(worthy)} worthy, {len(highlights)} highlights)"
-
-    # Create the issue
-    headers = {"PRIVATE-TOKEN": GITLAB_TOKEN}
     payload = {
-        "title": title,
-        "description": description,
-        "assignee_ids": [int(ASSIGNEE_ID)],
-        "labels": "brand-monitor,automated",
+        "title": f"Brand Mentions: {date_str} ({len(worthy)} worthy, {len(highlights)} highlights)",
+        "body": "\n".join(body_parts),
+        "labels": ["brand-monitor", "automated"],
+    }
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
     }
 
     try:
         resp = requests.post(
-            f"{GITLAB_URL}/projects/{PROJECT_ID}/issues",
+            f"{GITHUB_API_URL}/repos/{GITHUB_REPOSITORY}/issues",
             headers=headers,
             json=payload,
-            timeout=30
+            timeout=30,
         )
         resp.raise_for_status()
         issue = resp.json()
-        print(f"GitLab issue created: {issue.get('web_url')}")
+        print(f"GitHub issue created: {issue.get('html_url')}")
         return issue
     except Exception as e:
-        print(f"[ERROR] Failed to create GitLab issue: {e}", file=sys.stderr)
+        print(f"[ERROR] Failed to create GitHub issue: {e}", file=sys.stderr)
         return None
 
 
@@ -162,7 +167,6 @@ def main():
 
     print("=== Notification ===")
 
-    # Check flag
     flag = DATA_DIR / "scan_result.txt"
     if flag.exists():
         status = flag.read_text().strip()
@@ -173,24 +177,24 @@ def main():
             print("No worthy mentions. Skipping notification.")
             return 0
 
-    # Load scored mentions
     scored = load_csv(scored_file)
     if not scored:
         print("No scored mentions to notify about.")
         return 0
 
-    # Filter to worthy
-    worthy = [m for m in scored if int(m.get("signal_score", 0)) >= THRESHOLDS["notify"]]
+    worthy = [
+        m for m in scored
+        if int(m.get("signal_score", 0)) >= THRESHOLDS["notify"]
+    ]
     if not worthy:
         print("No mentions above notify threshold. Skipping.")
         return 0
 
     print(f"Worthy mentions to notify: {len(worthy)}")
 
-    # Create GitLab issue
-    issue = create_gitlab_issue(scored)
+    issue = create_github_issue(scored)
     if issue:
-        print(f"Notification sent via GitLab issue #{issue.get('iid')}")
+        print(f"Notification sent via GitHub issue #{issue.get('number')}")
     else:
         print("Issue creation skipped or failed.")
 

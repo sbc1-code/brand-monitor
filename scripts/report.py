@@ -2,7 +2,7 @@
 Report Generator
 Generates HTML report from scored mentions using Jinja2 template.
 Updates cumulative mention_log.csv with new entries.
-Outputs: public/index.html (for GitLab Pages)
+Outputs: index.html and public/index.html (for GitHub Pages)
 """
 
 import csv
@@ -12,12 +12,13 @@ from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 TEMPLATES_DIR = ROOT / "templates"
 PUBLIC_DIR = ROOT / "public"
+ROOT_REPORT = ROOT / "index.html"
 
 with open(ROOT / "config" / "scoring.json") as f:
     SCORING = json.load(f)
@@ -31,6 +32,14 @@ def load_csv(filepath):
         return []
     with open(filepath, "r", encoding="utf-8") as f:
         return list(csv.DictReader(f))
+
+
+def create_template_environment():
+    """Create an autoescaped Jinja environment for untrusted external content."""
+    return Environment(
+        loader=FileSystemLoader(str(TEMPLATES_DIR)),
+        autoescape=select_autoescape(["html", "xml"]),
+    )
 
 
 def update_mention_log(scored_mentions):
@@ -119,7 +128,7 @@ def generate_report(scored_mentions, all_mentions):
     }
 
     # Load and render template
-    env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)))
+    env = create_template_environment()
     template = env.get_template("report.html")
 
     html = template.render(
@@ -136,13 +145,17 @@ def generate_report(scored_mentions, all_mentions):
         thresholds=THRESHOLDS,
     )
 
-    # Write report
+    # Write report to both the generated artifact folder and the repo root.
+    # The root write keeps existing GitHub Pages branch deployments working.
     PUBLIC_DIR.mkdir(exist_ok=True)
     output = PUBLIC_DIR / "index.html"
     with open(output, "w", encoding="utf-8") as f:
         f.write(html)
+    with open(ROOT_REPORT, "w", encoding="utf-8") as f:
+        f.write(html)
 
     print(f"Report generated: {output}")
+    print(f"Report generated: {ROOT_REPORT}")
     return output
 
 
@@ -191,7 +204,7 @@ def generate_empty_report():
     all_mentions = load_csv(DATA_DIR / "mention_log.csv")
     brand_counts = Counter(m.get("brand_name", "") for m in all_mentions)
 
-    env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)))
+    env = create_template_environment()
     template = env.get_template("report.html")
 
     html = template.render(
@@ -218,7 +231,10 @@ def generate_empty_report():
     output = PUBLIC_DIR / "index.html"
     with open(output, "w", encoding="utf-8") as f:
         f.write(html)
+    with open(ROOT_REPORT, "w", encoding="utf-8") as f:
+        f.write(html)
     print(f"Empty report generated: {output}")
+    print(f"Empty report generated: {ROOT_REPORT}")
 
 
 if __name__ == "__main__":

@@ -55,6 +55,34 @@ def score_content_depth(title, snippet, brand_keywords):
     return rules["brand_only"]
 
 
+def get_product_terms(brand_config):
+    terms = []
+    for product in brand_config.get("products", []):
+        terms.extend(product.get("patterns", []))
+        if product.get("name"):
+            terms.append(product["name"])
+    return [t.strip().strip('"').lower() for t in terms if t]
+
+
+def score_content_depth_for_brand(title, snippet, brand_config):
+    """Score depth using configured products and keywords."""
+    text = f"{title} {snippet}".lower()
+    rules = SCORING["scoring_rules"]["content_depth"]
+
+    if any(term in text for term in get_product_terms(brand_config)):
+        return rules["product_specific"]
+
+    keyword_hits = sum(
+        1
+        for kw in brand_config.get("keywords", [])
+        if kw.strip('"').lower() in text
+    )
+    if keyword_hits >= 2 or len(snippet) > 300:
+        return rules["deep_mention"]
+
+    return rules["brand_only"]
+
+
 def score_recency(published_date):
     """Score based on how recent the content is."""
     rules = SCORING["scoring_rules"]["recency"]
@@ -126,10 +154,10 @@ def score_mention(mention):
     )
 
     authority = score_source_authority(mention.get("source_type", ""))
-    depth = score_content_depth(
+    depth = score_content_depth_for_brand(
         mention.get("title", ""),
         mention.get("snippet", ""),
-        brand_config["keywords"]
+        brand_config
     )
     recency = score_recency(mention.get("published_date", ""))
     sentiment_score, sentiment_label = score_sentiment(

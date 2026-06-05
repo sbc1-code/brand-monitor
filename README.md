@@ -1,48 +1,35 @@
 # Brand Monitor
 
-Automated brand mentions and syndication tracking for a multi-brand portfolio. Pipeline runs daily across three real brand properties; brand names anonymized for client confidentiality.
+Self-hosted brand mention monitoring for teams that need a lightweight public report without buying an enterprise media-monitoring suite.
+
+Live report: [sbc1-code.github.io/brand-monitor](https://sbc1-code.github.io/brand-monitor/)
 
 ## What It Does
 
-Daily scheduled pipeline that:
+The pipeline:
 
-1. **Scans** Google News RSS, Reddit, and known trade publication feeds for brand mentions
-2. **Deduplicates** against a cumulative mention log (Trigger 1: anything new?)
-3. **Scores** each mention by source authority, content depth, recency, and sentiment (Trigger 2: is it worthy?)
-4. **Reports** via HTML report deployed to GitLab Pages
-5. **Notifies** by creating a GitLab issue when worthy mentions are found
+1. Scans Google News RSS, Reddit search, and configured RSS feeds for brand mentions.
+2. Verifies that the brand actually appears in the result text.
+3. Deduplicates against a cumulative mention log.
+4. Scores each mention by source authority, content depth, recency, sentiment, and first-party/partner flags.
+5. Generates a static HTML report for GitHub Pages.
+6. Creates a GitHub issue when mentions pass the notification threshold.
 
-## Brands Tracked
+## Default Configuration
 
-- BrandAlpha (parent brand)
-- BrandBeta Pro (product line A)
-- BrandGamma Systems (product line B)
-- BrandDelta Locators (product line C)
-- BrandEpsilon Track (product line D)
-- BrandZeta Live (mobile app)
+The checked-in config tracks real public example brands so the repo works immediately after cloning or forking:
 
-## Pipeline Stages
+- OpenAI
+- GitHub
+- Vercel
 
-```
-scan -> dedup -> score -> report -> notify -> pages
-```
+Replace `config/brands.json` with your own brands, keywords, product patterns, and first-party domains before using it for your organization.
 
-## Configuration
+## Configuration Files
 
-- `config/brands.json` - Brand keywords and scan settings
-- `config/sources.json` - Data source configs (active + future API stubs)
-- `config/scoring.json` - Signal scoring rules and thresholds
-
-## API Integrations
-
-Implemented and gated by config/vars:
-- Google Custom Search API (set `GOOGLE_CSE_KEY` + `GOOGLE_CSE_CX`, then enable `google_custom_search` in `config/sources.json`)
-
-Planned stubs:
-- YouTube Data API v3 (set `YOUTUBE_API_KEY`)
-- Google Analytics 4 (set `GA4_SERVICE_ACCOUNT_JSON`)
-
-Set CI/CD variables and enable each source in `config/sources.json`.
+- `config/brands.json` - brands, keywords, product patterns, and exclude patterns
+- `config/sources.json` - no-key feeds plus optional API source toggles
+- `config/scoring.json` - scoring weights and report/notify/highlight thresholds
 
 ## Running Locally
 
@@ -54,6 +41,30 @@ python scripts/score.py
 python scripts/report.py
 ```
 
-## Report
+The report writes to both `index.html` and `public/index.html`.
 
-Latest report: [GitLab Pages](https://pages.example.com/brand-monitor)
+## GitHub Actions
+
+`.github/workflows/update-report.yml` runs daily and on manual dispatch:
+
+```text
+scan -> dedup -> score -> report -> notify -> commit report
+```
+
+GitHub provides `GITHUB_TOKEN` automatically for issue creation. Optional API-backed sources need secrets before being enabled:
+
+- Google Custom Search API: `GOOGLE_CSE_KEY` and `GOOGLE_CSE_CX`
+- YouTube Data API: `YOUTUBE_API_KEY` (scanner is disabled until implemented)
+- GA4 referral data: `GA4_SERVICE_ACCOUNT_JSON` (not enabled by default)
+
+## Production Notes
+
+- The cumulative mention log can be committed as `data/mention_log.csv`; keep it public only if your monitored brands and mentions are safe to expose.
+- The default no-key sources can rate-limit or return quiet periods. Treat zero mentions as a signal to inspect scanner health, not automatic proof that no mentions exist.
+- External titles/snippets are rendered with Jinja autoescaping enabled.
+
+## Tests
+
+```bash
+python -m unittest discover -s tests
+```
