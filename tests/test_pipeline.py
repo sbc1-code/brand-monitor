@@ -55,6 +55,37 @@ class BrandMonitorPipelineTests(unittest.TestCase):
         self.assertNotIn("<script>", rendered)
         self.assertIn("&lt;script&gt;", rendered)
 
+    def test_report_template_explains_monitor_without_mock_language(self):
+        env = report.create_template_environment()
+        rendered = env.get_template("report.html").render(
+            scan_date="June 05, 2026",
+            scan_period="Daily Scan",
+            summary={
+                "total_new": 0,
+                "total_cumulative": 0,
+                "highlights": 0,
+                "worthy": 0,
+                "brands_mentioned": 0,
+                "top_score": 0,
+            },
+            brand_stats=[],
+            type_stats=[],
+            brands_with_mentions={},
+            highlights=[],
+            worthy=[],
+            all_new_mentions=[],
+            all_cumulative=[],
+            thresholds={"highlight": 70, "notify": 40},
+        )
+
+        self.assertIn("Know where your brand is showing up", rendered)
+        self.assertIn("scans configured sources, dedupes mentions, scores signal", rendered)
+        self.assertIn("Live sample configuration", rendered)
+        lowered = rendered.lower()
+        self.assertNotIn("fictional", lowered)
+        self.assertNotIn("mock", lowered)
+        self.assertNotIn("demonstration", lowered)
+
     def test_mention_id_is_stable_by_url_and_brand(self):
         first = scan.generate_mention_id("https://unit.test/Post", "brand")
         second = scan.generate_mention_id("https://unit.test/Post", "brand")

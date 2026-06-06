@@ -7,240 +7,332 @@
     <style>
         @page {
             size: letter;
-            margin: 1in;
+            margin: 0.75in;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f7f8f5;
+            --panel: #ffffff;
+            --ink: #20221f;
+            --muted: #626a60;
+            --line: #dce2d8;
+            --soft-line: #edf0ea;
+            --accent: #2f6f5f;
+            --accent-dark: #1f5044;
+            --accent-soft: #e7f1ec;
+            --amber: #a8651a;
+            --amber-soft: #fff4e8;
+            --red: #b7443e;
+            --red-soft: #fff0ef;
+            --gray-soft: #f0f2ef;
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            color: #2D3031;
-            max-width: 8.5in;
-            margin: 0 auto;
-            padding: 20px;
-            background: white;
-        }
-
-        h1 {
-            font-weight: bold;
-            color: #2D3031;
-            font-size: 24pt;
-            margin-bottom: 5px;
-            border-bottom: 3px solid #30DC30;
-            padding-bottom: 10px;
-        }
-
-        .report-date {
-            font-size: 10pt;
-            color: #A2ACB4;
-            margin-bottom: 25px;
-        }
-
-        h2 {
-            font-weight: bold;
-            color: #2D3031;
-            font-size: 16pt;
-            margin-top: 35px;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #A2ACB4;
-            padding-bottom: 5px;
-        }
-
-        h3 {
-            font-weight: bold;
-            color: #2D3031;
-            font-size: 13pt;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-
-        p {
-            margin: 10px 0;
-            text-align: justify;
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
 
         a {
-            color: #30DC30;
+            color: var(--accent-dark);
             text-decoration: none;
-            border-bottom: 1px dotted #30DC30;
         }
 
         a:hover {
-            color: #2D3031;
-            border-bottom: 1px solid #2D3031;
+            text-decoration: underline;
         }
 
-        .summary-box {
-            background: #f8f9fa;
-            border-left: 4px solid #30DC30;
-            padding: 20px;
-            margin: 25px 0;
+        .page {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 32px 20px 48px;
+        }
+
+        .topline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 28px;
+            color: var(--muted);
+            font-size: 0.86rem;
+        }
+
+        .brand-lockup {
+            color: var(--ink);
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-size: 0.76rem;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            margin-right: 7px;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 360px;
+            gap: 24px;
+            align-items: stretch;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            font-size: clamp(2rem, 4vw, 3rem);
+            line-height: 1.05;
+            letter-spacing: 0;
+        }
+
+        .lede {
+            max-width: 760px;
+            margin: 0;
+            color: var(--muted);
+            font-size: 1.02rem;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 18px;
+        }
+
+        .sample-note {
+            display: grid;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .sample-note strong {
+            color: var(--ink);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 16px;
+            margin: 30px 0 12px;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            line-height: 1.2;
+        }
+
+        h3 {
+            margin: 0 0 8px;
+            font-size: 0.98rem;
+        }
+
+        .section-kicker {
+            color: var(--muted);
+            font-size: 0.86rem;
+        }
+
+        .explain-grid,
+        .summary-stats,
+        .brand-stats,
+        .action-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .explain-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            margin: 18px 0 20px;
         }
 
         .summary-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .stat-card {
-            background: white;
-            border: 2px solid #30DC30;
-            padding: 15px;
-            text-align: center;
-        }
-
-        .stat-card .count {
-            font-size: 32pt;
-            font-weight: bold;
-            color: #30DC30;
-            line-height: 1;
-        }
-
-        .stat-card .label {
-            font-size: 9pt;
-            color: #A2ACB4;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 5px;
-        }
-
-        .no-new {
-            text-align: center;
-            padding: 40px;
-            color: #A2ACB4;
-            font-size: 14pt;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            margin: 18px 0 18px;
         }
 
         .brand-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin: 25px 0;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         }
 
-        .brand-card {
-            background: white;
-            border: 2px solid #30DC30;
-            padding: 15px;
-            text-align: center;
+        .action-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .stat-card,
+        .brand-card,
+        .explain-card,
+        .action-card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .label {
+            margin-bottom: 6px;
+            color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .count {
+            color: var(--ink);
+            font-size: 2.15rem;
+            font-weight: 800;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat-card .detail,
+        .brand-card .detail,
+        .explain-card p,
+        .action-card p {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 0.88rem;
         }
 
         .brand-card h4 {
-            margin: 0 0 8px 0;
-            color: #2D3031;
-            font-size: 10pt;
-            font-weight: bold;
+            margin: 0 0 10px;
+            font-size: 0.95rem;
         }
 
-        .brand-card .count {
-            font-size: 32pt;
-            font-weight: bold;
-            color: #30DC30;
-            line-height: 1;
-        }
-
-        .brand-card .label {
-            font-size: 9pt;
-            color: #A2ACB4;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 5px;
+        .no-new {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 22px;
+            color: var(--muted);
         }
 
         .stats-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            overflow: hidden;
         }
 
         .stats-table th {
-            background: #2D3031;
-            color: white;
-            padding: 10px;
+            background: #f1f4ef;
+            color: var(--muted);
+            padding: 11px 12px;
             text-align: left;
-            font-weight: bold;
-            font-size: 10pt;
+            font-size: 0.74rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
         }
 
         .stats-table td {
-            padding: 8px 10px;
-            border-bottom: 1px solid #A2ACB4;
-            font-size: 10pt;
+            padding: 11px 12px;
+            border-top: 1px solid var(--soft-line);
+            font-size: 0.92rem;
         }
 
-        .stats-table tr:nth-child(even) {
-            background: #f8f9fa;
+        .mention-list {
+            display: grid;
+            gap: 12px;
         }
 
         .mention-item {
-            margin: 15px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-left: 3px solid #30DC30;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-left: 4px solid var(--accent);
+            border-radius: 8px;
+            padding: 15px 16px;
         }
 
         .mention-item.highlight {
-            border-left-color: #e05a20;
-            border-left-width: 4px;
+            border-left-color: var(--amber);
+            background: #fffdfa;
         }
 
         .mention-item h4 {
-            margin: 0 0 8px 0;
-            color: #2D3031;
-            font-size: 11pt;
-        }
-
-        .mention-item h4 a {
-            color: #2D3031;
-            border-bottom: none;
-        }
-
-        .mention-item h4 a:hover {
-            color: #30DC30;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin: 0 0 8px;
+            font-size: 0.98rem;
         }
 
         .mention-item p {
             margin: 8px 0;
-            font-size: 10pt;
-            text-align: left;
+            color: var(--muted);
+            font-size: 0.9rem;
         }
 
         .mention-meta {
-            font-size: 9pt;
-            color: #A2ACB4;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 14px;
             margin-top: 10px;
-            padding-top: 8px;
-            border-top: 1px solid #A2ACB4;
+            padding-top: 10px;
+            border-top: 1px solid var(--soft-line);
+            color: var(--muted);
+            font-size: 0.78rem;
         }
 
-        .score-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-size: 9pt;
-            font-weight: bold;
-            color: white;
+        .score-badge,
+        .row-tag {
+            display: inline-flex;
+            align-items: center;
+            width: max-content;
+            border-radius: 999px;
+            padding: 3px 8px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
         }
 
-        .score-high { background: #e05a20; }
-        .score-medium { background: #30DC30; color: #2D3031; }
-        .score-low { background: #A2ACB4; }
+        .score-high {
+            background: var(--amber-soft);
+            color: var(--amber);
+        }
 
-        .sentiment-positive { color: #30DC30; }
-        .sentiment-negative { color: #e05a20; }
-        .sentiment-neutral { color: #A2ACB4; }
+        .score-medium {
+            background: var(--accent-soft);
+            color: var(--accent-dark);
+        }
+
+        .score-low {
+            background: var(--gray-soft);
+            color: var(--muted);
+        }
+
+        .sentiment-positive { color: var(--accent-dark); }
+        .sentiment-negative { color: var(--red); }
+        .sentiment-neutral { color: var(--muted); }
 
         .csv-section {
-            margin-top: 40px;
-            page-break-before: always;
+            margin-top: 38px;
         }
 
         .csv-toolbar {
-            background: #f8f9fa;
-            border: 1px solid #A2ACB4;
-            padding: 12px;
-            margin: 14px 0 10px 0;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 14px;
+            margin: 14px 0 10px;
         }
 
         .toolbar-grid {
@@ -252,22 +344,24 @@
 
         .toolbar-field label {
             display: block;
-            font-size: 8pt;
-            color: #2D3031;
-            font-weight: bold;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
+            color: var(--muted);
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
             text-transform: uppercase;
-            letter-spacing: 0.4px;
         }
 
         .toolbar-field input,
         .toolbar-field select {
             width: 100%;
-            border: 1px solid #A2ACB4;
-            background: white;
-            padding: 6px 8px;
-            font-size: 9pt;
-            color: #2D3031;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: #fff;
+            color: var(--ink);
+            padding: 9px 10px;
+            font: inherit;
+            font-size: 0.88rem;
         }
 
         .toolbar-actions {
@@ -277,328 +371,442 @@
         }
 
         .toolbar-button {
-            border: 1px solid #2D3031;
-            background: #2D3031;
-            color: white;
-            font-size: 8pt;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            padding: 7px 10px;
+            border: 0;
+            border-radius: 6px;
+            background: var(--accent);
+            color: #fff;
             cursor: pointer;
+            font: inherit;
+            font-size: 0.78rem;
+            font-weight: 800;
+            padding: 10px 12px;
         }
 
         .toolbar-button:hover {
-            background: #30DC30;
-            border-color: #30DC30;
-            color: #2D3031;
+            background: var(--accent-dark);
         }
 
         .toolbar-meta {
             margin-top: 10px;
-            font-size: 9pt;
-            color: #A2ACB4;
+            color: var(--muted);
+            font-size: 0.82rem;
         }
 
         .csv-table-wrap {
             overflow-x: auto;
-            border: 1px solid #A2ACB4;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--panel);
         }
 
         .csv-table {
             width: 100%;
-            border-collapse: collapse;
-            font-size: 8pt;
-            margin: 0;
             min-width: 900px;
+            border-collapse: collapse;
+            font-size: 0.8rem;
         }
 
         .csv-table th {
-            background: #2D3031;
-            color: white;
-            padding: 8px 6px;
+            background: #f1f4ef;
+            color: var(--muted);
+            padding: 9px 8px;
             text-align: left;
-            font-weight: bold;
-            font-size: 8pt;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
         }
 
         .csv-table td {
-            padding: 6px;
-            border: 1px solid #A2ACB4;
+            padding: 8px;
+            border-top: 1px solid var(--soft-line);
             vertical-align: top;
-            font-size: 8pt;
         }
 
-        .csv-table tr:hover {
-            background: #f8f9fa;
+        .csv-table tr:hover td {
+            background: #fbfcfa;
         }
 
         .url-cell {
+            max-width: 190px;
             word-break: break-all;
-            max-width: 180px;
-        }
-
-        .row-tag {
-            display: inline-block;
-            border-radius: 3px;
-            padding: 2px 6px;
-            font-size: 7pt;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
         }
 
         .row-tag-live {
-            background: #eaf7ea;
-            color: #1f6b1f;
-            border: 1px solid #30DC30;
+            background: var(--accent-soft);
+            color: var(--accent-dark);
         }
 
         .row-tag-historical {
-            background: #fff2e6;
-            color: #7a3e00;
-            border: 1px solid #f0b36e;
+            background: var(--amber-soft);
+            color: var(--amber);
         }
 
         .footer {
-            margin-top: 40px;
-            padding-top: 15px;
-            border-top: 2px solid #A2ACB4;
-            font-size: 9pt;
-            color: #A2ACB4;
+            margin-top: 38px;
+            padding-top: 18px;
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 0.82rem;
             text-align: center;
         }
 
         @media (max-width: 900px) {
+            .hero,
+            .explain-grid,
+            .summary-stats,
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+
             .toolbar-grid {
                 grid-template-columns: repeat(2, minmax(140px, 1fr));
             }
         }
 
+        @media (max-width: 560px) {
+            .page {
+                padding: 22px 14px 36px;
+            }
+
+            .topline {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .toolbar-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media print {
-            body { padding: 0; }
-            .csv-toolbar { display: none; }
-            .csv-table-wrap { overflow: visible; border: none; }
+            body {
+                background: #fff;
+            }
+
+            .page {
+                padding: 0;
+            }
+
+            .panel,
+            .stat-card,
+            .brand-card,
+            .explain-card,
+            .action-card,
+            .mention-item,
+            .csv-toolbar,
+            .csv-table-wrap,
+            .stats-table {
+                box-shadow: none;
+            }
+
+            .csv-toolbar {
+                display: none;
+            }
+
+            .csv-table-wrap {
+                overflow: visible;
+                border: none;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Brand Monitor Report</h1>
-    <div class="report-date">{{ scan_date }} | {{ scan_period }}</div>
-
-    {% if summary.total_new == 0 %}
-    <div class="no-new">
-        <p>No new brand mentions discovered in this scan.</p>
-        <p style="font-size: 10pt;">Cumulative mentions tracked: {{ summary.total_cumulative }}</p>
-    </div>
-    {% else %}
-
-    <div class="summary-stats">
-        <div class="stat-card">
-            <div class="count">{{ summary.total_new }}</div>
-            <div class="label">New Mentions</div>
+    <main class="page">
+        <div class="topline">
+            <div class="brand-lockup">Brand Monitor</div>
+            <div><span class="status-dot"></span>{{ scan_date }} | {{ scan_period }}</div>
         </div>
-        <div class="stat-card">
-            <div class="count">{{ summary.highlights }}</div>
-            <div class="label">Highlights</div>
-        </div>
-        <div class="stat-card">
-            <div class="count">{{ summary.total_cumulative }}</div>
-            <div class="label">Total Tracked</div>
-        </div>
-    </div>
 
-    {% if brand_stats %}
-    <h2>Brand Mention Breakdown</h2>
-    <div class="brand-stats">
-        {% for brand in brand_stats %}
-        <div class="brand-card">
-            <h4>{{ brand.name }}</h4>
-            <div class="count">{{ brand.count }}</div>
-            <div class="label">Mentions</div>
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
-    {% if type_stats %}
-    <h2>Content Type Distribution</h2>
-    <table class="stats-table">
-        <tr>
-            <th>Content Type</th>
-            <th>Count</th>
-            <th>Percentage</th>
-        </tr>
-        {% for t in type_stats %}
-        <tr>
-            <td>{{ t.type }}</td>
-            <td>{{ t.count }}</td>
-            <td>{{ t.percentage }}%</td>
-        </tr>
-        {% endfor %}
-    </table>
-    {% endif %}
-
-    {% if highlights %}
-    <h2>Highlights</h2>
-    <p>Mentions with signal score {{ thresholds.highlight }}+ indicating high-value brand visibility.</p>
-    {% for m in highlights %}
-    <div class="mention-item highlight">
-        <h4>
-            <a href="{{ m.url }}" target="_blank">{{ m.title or 'Untitled' }}</a>
-            <span class="score-badge score-high">{{ m.signal_score }}</span>
-        </h4>
-        <p><strong>{{ m.brand_name }}</strong> {% if m.product %} &mdash; {{ m.product }}{% endif %}</p>
-        {% if m.snippet %}
-        <p>{{ m.snippet[:400] }}</p>
-        {% endif %}
-        <div class="mention-meta">
-            <strong>Source:</strong> {{ m.source_name }} ({{ m.source_type | replace('_', ' ') | title }})
-            | <strong>Published:</strong> {{ m.published_date or 'Unknown' }}
-            | <strong>Sentiment:</strong> <span class="sentiment-{{ m.sentiment or 'neutral' }}">{{ m.sentiment or 'neutral' }}</span>
-        </div>
-    </div>
-    {% endfor %}
-    {% endif %}
-
-    {% for brand_name, mentions in brands_with_mentions.items() %}
-    <h2>{{ brand_name }}</h2>
-    <p><strong>New Mentions:</strong> {{ mentions | length }}</p>
-    {% for m in mentions %}
-    {% if m.signal_score | int < thresholds.highlight %}
-    <div class="mention-item">
-        <h4>
-            <a href="{{ m.url }}" target="_blank">{{ m.title or 'Untitled' }}</a>
-            {% if m.signal_score | int >= thresholds.notify %}
-            <span class="score-badge score-medium">{{ m.signal_score }}</span>
-            {% else %}
-            <span class="score-badge score-low">{{ m.signal_score }}</span>
-            {% endif %}
-        </h4>
-        <p><strong>Product:</strong> {{ m.product or 'General' }}</p>
-        {% if m.snippet %}
-        <p>{{ m.snippet[:400] }}</p>
-        {% endif %}
-        <div class="mention-meta">
-            <strong>Source:</strong> {{ m.source_name }} ({{ m.source_type | replace('_', ' ') | title }})
-            | <strong>Published:</strong> {{ m.published_date or 'Unknown' }}
-            | <strong>Sentiment:</strong> <span class="sentiment-{{ m.sentiment or 'neutral' }}">{{ m.sentiment or 'neutral' }}</span>
-        </div>
-    </div>
-    {% endif %}
-    {% endfor %}
-    {% endfor %}
-
-    {% endif %}
-
-    {% if all_cumulative %}
-    <div class="csv-section">
-        <h2>Cumulative Mention Log</h2>
-        <p>All {{ all_cumulative | length }} tracked mentions. Use search, filters, and sort controls to explore quickly.</p>
-
-        <div class="csv-toolbar">
-            <div class="toolbar-grid">
-                <div class="toolbar-field">
-                    <label for="mention-search">Search</label>
-                    <input id="mention-search" type="text" placeholder="Title, source, product, snippet">
-                </div>
-                <div class="toolbar-field">
-                    <label for="brand-filter">Brand</label>
-                    <select id="brand-filter">
-                        <option value="">All Brands</option>
-                    </select>
-                </div>
-                <div class="toolbar-field">
-                    <label for="type-filter">Source Type</label>
-                    <select id="type-filter">
-                        <option value="">All Types</option>
-                    </select>
-                </div>
-                <div class="toolbar-field">
-                    <label for="origin-filter">Origin</label>
-                    <select id="origin-filter">
-                        <option value="">Live + Historical</option>
-                        <option value="live">Live</option>
-                        <option value="historical">Historical</option>
-                    </select>
-                </div>
-                <div class="toolbar-field">
-                    <label for="score-filter">Min Score</label>
-                    <input id="score-filter" type="number" min="0" max="100" step="1" placeholder="0">
-                </div>
-                <div class="toolbar-field">
-                    <label for="sort-select">Sort</label>
-                    <select id="sort-select">
-                        <option value="score_desc">Score High to Low</option>
-                        <option value="score_asc">Score Low to High</option>
-                        <option value="date_desc">Date Newest First</option>
-                        <option value="date_asc">Date Oldest First</option>
-                        <option value="brand_asc">Brand A to Z</option>
-                        <option value="brand_desc">Brand Z to A</option>
-                        <option value="source_asc">Source A to Z</option>
-                        <option value="source_desc">Source Z to A</option>
-                    </select>
-                </div>
-                <div class="toolbar-actions">
-                    <button class="toolbar-button" type="button" id="reset-filters">Reset</button>
-                </div>
+        <section class="hero">
+            <div>
+                <h1>Know where your brand is showing up</h1>
+                <p class="lede">A lightweight public-source monitor for founders and small teams. It scans configured sources, dedupes mentions, scores signal, and turns the daily feed into a short action list.</p>
             </div>
-            <div id="result-count" class="toolbar-meta"></div>
-        </div>
+            <aside class="panel sample-note">
+                <strong>Live sample configuration</strong>
+                <span>This report is generated from the checked-in brand and source config. Swap <code>config/brands.json</code> and <code>config/sources.json</code> to monitor your own market.</span>
+            </aside>
+        </section>
 
-        <div class="csv-table-wrap">
-            <table class="csv-table" id="cumulative-table">
-                <thead>
-                    <tr>
-                        <th>Brand</th>
-                        <th>Product</th>
-                        <th>Source</th>
-                        <th>Type</th>
-                        <th>Date</th>
-                        <th>Score</th>
-                        <th>Origin</th>
-                        <th>Link</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for m in all_cumulative | sort(attribute='signal_score', reverse=true) %}
-                    {% set is_historical = (m.is_historical_seed or 'False') == 'True' %}
-                    <tr
-                        data-brand="{{ (m.brand_name or '') | lower }}"
-                        data-brand-label="{{ m.brand_name or '' }}"
-                        data-type="{{ (m.source_type or '') | lower }}"
-                        data-type-label="{{ (m.source_type or '') | replace('_', ' ') | title }}"
-                        data-source="{{ (m.source_name or '') | lower }}"
-                        data-score="{{ m.signal_score or 0 }}"
-                        data-date="{{ m.published_date or '' }}"
-                        data-origin="{{ 'historical' if is_historical else 'live' }}"
-                        data-search="{{ ((m.brand_name or '') ~ ' ' ~ (m.product or '') ~ ' ' ~ (m.source_name or '') ~ ' ' ~ (m.title or '') ~ ' ' ~ (m.snippet or '')) | lower }}"
-                    >
-                        <td>{{ m.brand_name }}</td>
-                        <td>{{ m.product }}</td>
-                        <td>{{ m.source_name }}</td>
-                        <td>{{ m.source_type | replace('_', ' ') | title }}</td>
-                        <td>{{ m.published_date or '-' }}</td>
-                        <td>{{ m.signal_score }}</td>
-                        <td>
-                            {% if is_historical %}
-                            <span class="row-tag row-tag-historical">Historical{% if m.historical_quality_tier %} {{ m.historical_quality_tier }}{% endif %}</span>
-                            {% else %}
-                            <span class="row-tag row-tag-live">Live</span>
-                            {% endif %}
-                        </td>
-                        <td class="url-cell"><a href="{{ m.url }}" target="_blank">{{ m.domain or 'link' }}</a></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        <section class="explain-grid" aria-label="What this monitor does">
+            <div class="explain-card">
+                <div class="label">What</div>
+                <h3>Daily mention scan</h3>
+                <p>Tracks public mentions across configured feeds and search surfaces without requiring a paid enterprise suite.</p>
+            </div>
+            <div class="explain-card">
+                <div class="label">Why</div>
+                <h3>Less missed signal</h3>
+                <p>Find launches, coverage, competitor comparisons, and high-signal posts before they disappear into the feed.</p>
+            </div>
+            <div class="explain-card">
+                <div class="label">How</div>
+                <h3>Filter, dedupe, score</h3>
+                <p>Filters loose matches, removes repeat URLs, scores relevance, and publishes a static report for the team.</p>
+            </div>
+        </section>
 
-        <p style="margin-top: 25px; font-size: 9pt; color: #A2ACB4;">
-            <em>Signal Score: Combined metric of source authority, content depth, recency, and sentiment. Higher scores indicate more valuable mentions.</em>
-        </p>
-    </div>
-    {% endif %}
+        <section class="summary-stats" aria-label="Scan summary">
+            <div class="stat-card">
+                <div class="label">New mentions</div>
+                <div class="count">{{ summary.total_new }}</div>
+                <div class="detail">Discovered in this scan</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">High signal</div>
+                <div class="count">{{ summary.highlights }}</div>
+                <div class="detail">Score {{ thresholds.highlight }}+ mentions</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Brands watched</div>
+                <div class="count">{{ summary.brands_mentioned }}</div>
+                <div class="detail">Configured brands with tracked mentions</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Total tracked</div>
+                <div class="count">{{ summary.total_cumulative }}</div>
+                <div class="detail">Cumulative mention log</div>
+            </div>
+        </section>
+
+        <section class="action-grid" aria-label="Recommended next actions">
+            <div class="action-card">
+                <div class="label">First check</div>
+                <h3>Review high-signal mentions</h3>
+                <p>{% if highlights %}Start with the {{ highlights | length }} highlight{% if highlights | length != 1 %}s{% endif %} below and decide whether to respond, share, or log the mention.{% else %}No high-signal mentions crossed the highlight threshold in this scan.{% endif %}</p>
+            </div>
+            <div class="action-card">
+                <div class="label">Second check</div>
+                <h3>Compare brand mix</h3>
+                <p>{% if brand_stats %}Use the brand breakdown to see which configured names are generating attention today.{% else %}No brand-specific new mentions were available in this scan.{% endif %}</p>
+            </div>
+            <div class="action-card">
+                <div class="label">Third check</div>
+                <h3>Update the config</h3>
+                <p>Add competitors, products, exclusions, or source feeds when the log shows too much noise or misses expected coverage.</p>
+            </div>
+        </section>
+
+        {% if summary.total_new == 0 %}
+        <section class="no-new">
+            <strong>No new brand mentions discovered in this scan.</strong>
+            <p>Cumulative mentions tracked: {{ summary.total_cumulative }}. The searchable log below is still available for review.</p>
+        </section>
+        {% endif %}
+
+        {% if brand_stats %}
+        <div class="section-title">
+            <h2>Brand mention breakdown</h2>
+            <span class="section-kicker">New mentions by configured brand</span>
+        </div>
+        <section class="brand-stats">
+            {% for brand in brand_stats %}
+            <div class="brand-card">
+                <h4>{{ brand.name }}</h4>
+                <div class="count">{{ brand.count }}</div>
+                <div class="detail">Mentions</div>
+            </div>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        {% if type_stats %}
+        <div class="section-title">
+            <h2>Source mix</h2>
+            <span class="section-kicker">Where this scan found mentions</span>
+        </div>
+        <table class="stats-table">
+            <tr>
+                <th>Content type</th>
+                <th>Count</th>
+                <th>Percentage</th>
+            </tr>
+            {% for t in type_stats %}
+            <tr>
+                <td>{{ t.type }}</td>
+                <td>{{ t.count }}</td>
+                <td>{{ t.percentage }}%</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+
+        {% if highlights %}
+        <div class="section-title">
+            <h2>High-signal mentions</h2>
+            <span class="section-kicker">Score {{ thresholds.highlight }}+ based on source, recency, relevance, and sentiment</span>
+        </div>
+        <section class="mention-list">
+            {% for m in highlights %}
+            <article class="mention-item highlight">
+                <h4>
+                    <a href="{{ m.url }}" target="_blank" rel="noopener noreferrer">{{ m.title or 'Untitled' }}</a>
+                    <span class="score-badge score-high">{{ m.signal_score }}</span>
+                </h4>
+                <p><strong>{{ m.brand_name }}</strong>{% if m.product %} &mdash; {{ m.product }}{% endif %}</p>
+                {% if m.snippet %}
+                <p>{{ m.snippet[:400] }}</p>
+                {% endif %}
+                <div class="mention-meta">
+                    <span><strong>Source:</strong> {{ m.source_name }} ({{ m.source_type | replace('_', ' ') | title }})</span>
+                    <span><strong>Published:</strong> {{ m.published_date or 'Unknown' }}</span>
+                    <span><strong>Sentiment:</strong> <span class="sentiment-{{ m.sentiment or 'neutral' }}">{{ m.sentiment or 'neutral' }}</span></span>
+                </div>
+            </article>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        {% for brand_name, mentions in brands_with_mentions.items() %}
+        <div class="section-title">
+            <h2>{{ brand_name }}</h2>
+            <span class="section-kicker">{{ mentions | length }} new mention{% if mentions | length != 1 %}s{% endif %}</span>
+        </div>
+        <section class="mention-list">
+            {% for m in mentions %}
+            {% if m.signal_score | int < thresholds.highlight %}
+            <article class="mention-item">
+                <h4>
+                    <a href="{{ m.url }}" target="_blank" rel="noopener noreferrer">{{ m.title or 'Untitled' }}</a>
+                    {% if m.signal_score | int >= thresholds.notify %}
+                    <span class="score-badge score-medium">{{ m.signal_score }}</span>
+                    {% else %}
+                    <span class="score-badge score-low">{{ m.signal_score }}</span>
+                    {% endif %}
+                </h4>
+                <p><strong>Product:</strong> {{ m.product or 'General' }}</p>
+                {% if m.snippet %}
+                <p>{{ m.snippet[:400] }}</p>
+                {% endif %}
+                <div class="mention-meta">
+                    <span><strong>Source:</strong> {{ m.source_name }} ({{ m.source_type | replace('_', ' ') | title }})</span>
+                    <span><strong>Published:</strong> {{ m.published_date or 'Unknown' }}</span>
+                    <span><strong>Sentiment:</strong> <span class="sentiment-{{ m.sentiment or 'neutral' }}">{{ m.sentiment or 'neutral' }}</span></span>
+                </div>
+            </article>
+            {% endif %}
+            {% endfor %}
+        </section>
+        {% endfor %}
+
+        {% if all_cumulative %}
+        <section class="csv-section">
+            <div class="section-title">
+                <h2>Cumulative mention log</h2>
+                <span class="section-kicker">All {{ all_cumulative | length }} tracked mentions</span>
+            </div>
+            <p class="section-kicker">Use search, filters, and sort controls to inspect live and historical mentions quickly.</p>
+
+            <div class="csv-toolbar">
+                <div class="toolbar-grid">
+                    <div class="toolbar-field">
+                        <label for="mention-search">Search</label>
+                        <input id="mention-search" type="text" placeholder="Title, source, product, snippet">
+                    </div>
+                    <div class="toolbar-field">
+                        <label for="brand-filter">Brand</label>
+                        <select id="brand-filter">
+                            <option value="">All Brands</option>
+                        </select>
+                    </div>
+                    <div class="toolbar-field">
+                        <label for="type-filter">Source Type</label>
+                        <select id="type-filter">
+                            <option value="">All Types</option>
+                        </select>
+                    </div>
+                    <div class="toolbar-field">
+                        <label for="origin-filter">Origin</label>
+                        <select id="origin-filter">
+                            <option value="">Live + Historical</option>
+                            <option value="live">Live</option>
+                            <option value="historical">Historical</option>
+                        </select>
+                    </div>
+                    <div class="toolbar-field">
+                        <label for="score-filter">Min Score</label>
+                        <input id="score-filter" type="number" min="0" max="100" step="1" placeholder="0">
+                    </div>
+                    <div class="toolbar-field">
+                        <label for="sort-select">Sort</label>
+                        <select id="sort-select">
+                            <option value="score_desc">Score High to Low</option>
+                            <option value="score_asc">Score Low to High</option>
+                            <option value="date_desc">Date Newest First</option>
+                            <option value="date_asc">Date Oldest First</option>
+                            <option value="brand_asc">Brand A to Z</option>
+                            <option value="brand_desc">Brand Z to A</option>
+                            <option value="source_asc">Source A to Z</option>
+                            <option value="source_desc">Source Z to A</option>
+                        </select>
+                    </div>
+                    <div class="toolbar-actions">
+                        <button class="toolbar-button" type="button" id="reset-filters">Reset</button>
+                    </div>
+                </div>
+                <div id="result-count" class="toolbar-meta"></div>
+            </div>
+
+            <div class="csv-table-wrap">
+                <table class="csv-table" id="cumulative-table">
+                    <thead>
+                        <tr>
+                            <th>Brand</th>
+                            <th>Product</th>
+                            <th>Source</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Score</th>
+                            <th>Origin</th>
+                            <th>Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in all_cumulative | sort(attribute='signal_score', reverse=true) %}
+                        {% set is_historical = (m.is_historical_seed or 'False') == 'True' %}
+                        <tr
+                            data-brand="{{ (m.brand_name or '') | lower }}"
+                            data-brand-label="{{ m.brand_name or '' }}"
+                            data-type="{{ (m.source_type or '') | lower }}"
+                            data-type-label="{{ (m.source_type or '') | replace('_', ' ') | title }}"
+                            data-source="{{ (m.source_name or '') | lower }}"
+                            data-score="{{ m.signal_score or 0 }}"
+                            data-date="{{ m.published_date or '' }}"
+                            data-origin="{{ 'historical' if is_historical else 'live' }}"
+                            data-search="{{ ((m.brand_name or '') ~ ' ' ~ (m.product or '') ~ ' ' ~ (m.source_name or '') ~ ' ' ~ (m.title or '') ~ ' ' ~ (m.snippet or '')) | lower }}"
+                        >
+                            <td>{{ m.brand_name }}</td>
+                            <td>{{ m.product }}</td>
+                            <td>{{ m.source_name }}</td>
+                            <td>{{ m.source_type | replace('_', ' ') | title }}</td>
+                            <td>{{ m.published_date or '-' }}</td>
+                            <td>{{ m.signal_score }}</td>
+                            <td>
+                                {% if is_historical %}
+                                <span class="row-tag row-tag-historical">Historical{% if m.historical_quality_tier %} {{ m.historical_quality_tier }}{% endif %}</span>
+                                {% else %}
+                                <span class="row-tag row-tag-live">Live</span>
+                                {% endif %}
+                            </td>
+                            <td class="url-cell"><a href="{{ m.url }}" target="_blank" rel="noopener noreferrer">{{ m.domain or 'link' }}</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="section-kicker" style="margin-top: 14px;">
+                Signal Score combines source authority, content depth, recency, and sentiment. Higher scores indicate more valuable mentions.
+            </p>
+        </section>
+        {% endif %}
+
+        <div class="footer">
+            <p>Brand Monitor | Generated automatically by GitHub Actions</p>
+            <p>Report issues: <a href="https://github.com/sbc1-code/brand-monitor/issues">brand-monitor</a></p>
+        </div>
+    </main>
 
     <script>
         (function () {
@@ -724,10 +932,5 @@
             apply();
         })();
     </script>
-
-    <div class="footer">
-        <p>Brand Monitor | Generated automatically by GitHub Actions</p>
-        <p>Report issues: <a href="https://github.com/sbc1-code/brand-monitor/issues">brand-monitor</a></p>
-    </div>
 </body>
 </html>
